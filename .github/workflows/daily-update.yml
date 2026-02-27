@@ -33,8 +33,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── 4. Google News RSS からニュース取得 ──────────
-      - name: Fetch latest news (Google News RSS / API key 不要)
+      # ── 4. Google News RSS からニュース取得・英語記事は Claude で翻訳 ──
+      - name: Fetch latest news (Google News RSS + Claude 翻訳)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/fetch-and-update.js
 
       # ── 5. 変更があるか確認 ──────────────────────────

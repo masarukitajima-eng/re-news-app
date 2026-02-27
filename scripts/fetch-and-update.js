@@ -1,11 +1,25 @@
 // 不動産ニュース自動取得・更新スクリプト
-// GitHub Actions / ローカル両対応・APIキー不要
-// 使い方: node scripts/fetch-and-update.js
+// GitHub Actions / ローカル両対応・APIキー不要（翻訳はオプション）
+// 英語記事は Claude API で日本語に翻訳して保存
 //
-// Google News RSS → src/data/mockNews.ts に新記事を追記する
+// 使い方: node scripts/fetch-and-update.js
 
 const fs   = require('fs');
 const path = require('path');
+
+// ── .env.local の読み込み ─────────────────────────────
+function loadEnvLocal() {
+  const envPath = path.join(__dirname, '..', '.env.local');
+  if (!fs.existsSync(envPath)) return;
+  const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+  for (const line of lines) {
+    const m = line.match(/^([^#=\s][^=]*)=(.*)$/);
+    if (m && !process.env[m[1].trim()]) {
+      process.env[m[1].trim()] = m[2].trim();
+    }
+  }
+}
+loadEnvLocal();
 
 // ──────────────────────────────────────────
 // 検索クエリ設定
@@ -118,6 +132,75 @@ function calcReadTime(text) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ──────────────────────────────────────────
+// 言語判定・翻訳
+// ──────────────────────────────────────────
+
+/** 日本語文字（ひらがな・カタカナ・漢字）が含まれていなければ英語と判定 */
+function isEnglish(text) {
+  return !/[\u3040-\u9FFF]/.test(text);
+}
+
+let anthropicClient = null;
+
+function getAnthropicClient() {
+  if (anthropicClient) return anthropicClient;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const { Anthropic } = require('@anthropic-ai/sdk');
+    anthropicClient = new Anthropic({ apiKey });
+    return anthropicClient;
+  } catch (e) {
+    console.warn('  ⚠️  @anthropic-ai/sdk が見つかりません:', e.message);
+    return null;
+  }
+}
+
+/**
+ * Claude API を使って英語記事を日本語に翻訳
+ * @returns {{ title, description, content } | null}
+ */
+async function translateToJapanese(title, description, category) {
+  const client = getAnthropicClient();
+  if (!client) return null;
+
+  try {
+    const prompt = `あなたは不動産・PropTech専門の日本語ライターです。
+以下の英語の不動産ニュース記事を日本語に翻訳・要約してください。
+
+カテゴリ: ${category}
+タイトル: ${title}
+リード文: ${description}
+
+以下のJSON形式のみで返してください（コードブロック不要）:
+{
+  "title": "日本語タイトル（簡潔に、50文字以内）",
+  "description": "日本語のリード文（記事の要点を120文字以内で）",
+  "content": "日本語の本文（300文字程度で詳しく解説）"
+}`;
+
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const text = response.content[0].text.trim()
+      .replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+    const parsed = JSON.parse(text);
+
+    // 必須フィールドの確認
+    if (!parsed.title || !parsed.description || !parsed.content) {
+      throw new Error('翻訳結果に必須フィールドがありません');
+    }
+    return parsed;
+  } catch (e) {
+    console.warn(`  ⚠️  翻訳失敗 ("${title.slice(0, 30)}..."): ${e.message}`);
+    return null;
+  }
+}
+
+// ──────────────────────────────────────────
 // メイン処理
 // ──────────────────────────────────────────
 async function main() {
@@ -129,7 +212,9 @@ async function main() {
   const existingIds  = [...ts.matchAll(/"id": "(\d+)"/g)].map(m => parseInt(m[1]));
   let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 100;
 
+  const hasTranslation = !!process.env.ANTHROPIC_API_KEY;
   console.log(`既存記事数: ${existingIds.length} 件`);
+  console.log(`翻訳機能: ${hasTranslation ? '✅ ON (ANTHROPIC_API_KEY あり)' : '⚠️  OFF (ANTHROPIC_API_KEY なし)'}`);
   console.log('📡 Google News RSS を取得中...\n');
 
   const newArticles = [];
@@ -150,12 +235,28 @@ async function main() {
           ? new Date(item.pubDate).toISOString()
           : new Date().toISOString();
 
-        const description = (item.description || item.title).slice(0, 120);
-        const content     = item.description || item.title;
+        let title       = item.title;
+        let description = (item.description || item.title).slice(0, 120);
+        let content     = item.description || item.title;
+
+        // 英語記事を翻訳
+        if (isEnglish(title) && hasTranslation) {
+          process.stdout.write('\n    🔄 翻訳中: ' + title.slice(0, 50) + '... ');
+          const translated = await translateToJapanese(title, item.description || item.title, category);
+          if (translated) {
+            title       = translated.title;
+            description = translated.description.slice(0, 120);
+            content     = translated.content;
+            process.stdout.write('✅\n');
+          } else {
+            process.stdout.write('(スキップ)\n');
+          }
+          await sleep(300); // レートリミット対策
+        }
 
         newArticles.push({
           id:          String(nextId++),
-          title:       item.title,
+          title,
           description,
           content,
           category,
@@ -177,7 +278,6 @@ async function main() {
 
   if (newArticles.length === 0) {
     console.log('\n✅ 新しい記事はありませんでした（スキップ）');
-    // 変更なしを示す終了コード 0 で終了
     return;
   }
 
