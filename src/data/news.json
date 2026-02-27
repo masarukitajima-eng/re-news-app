@@ -1,0 +1,67 @@
+[
+  {
+    "id": "39",
+    "title": "国内初・長谷工×燈がBIM×生成AIシステムを構築——設計図書確認をチャットで瞬時に完結",
+    "description": "長谷工コーポレーションと燈株式会社が、マンション特化BIMデータと生成AIを融合した国内初のシステムを共同開発。建設現場でのチャット形式の質問で設計図書情報を即時取得できる。",
+    "content": "長谷工コーポレーションと燈株式会社が、「長谷工版BIM（建築3次元設計モデル）」と燈の生成AI技術を組み合わせた新システムを共同構築した。建設現場のスタッフがチャット形式で質問するだけで、BIM内の設計図書データから必要な情報を瞬時に検索・取得できる。従来は作業員が大量の設計図書を手作業で確認する必要があり、長時間を要していたが、本システムにより大幅な効率化が実現する。71万戸超のマンション施工実績を持つ長谷工の設計データと、GPTを活用した燈のAI技術の組み合わせにより高精度を実現。すでにプロトタイプの試験運用で実用性が確認されており、建設業界のDX・生産性向上への貢献が期待される。不動産×建設領域における生成AI活用の先進事例として業界から注目を集めている。",
+    "category": "PropTech",
+    "author": "燈株式会社 / 長谷工コーポレーション",
+    "publishedAt": "2025-02-28T13:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://prtimes.jp/main/html/rd/p/000000036.000083531.html",
+    "readTime": 4
+  },
+  {
+    "id": "40",
+    "title": "阪急阪神不動産がゴーレムへ出資——AIで建設時CO2排出量を自動算定、脱炭素DXを同時推進",
+    "description": "阪急阪神不動産のCVCが建設データプラットフォーム「ゴーレム」に出資。AIによる建設時CO2排出量の自動算定システムを導入し、不動産業界の脱炭素化とDXを一体で推進する。",
+    "content": "阪急阪神不動産が設立したコーポレートベンチャーキャピタル（CVC）ファンド「HHP共創ファンド1号」が、建設データプラットフォームを運営するゴーレムと事業提携契約を締結し出資した。同プラットフォームが提供する「Gorlem CO2」は、AIを活用して建物のライフサイクル全体のCO2排出量を自動で算定するシステム。従来は専門技術者による手作業での算定に多大な時間を要していたが、AIにより大幅な効率化と精度向上を実現した。阪急阪神不動産は今年度竣工予定の全物件を対象に同システムの活用を進める計画で、建設業界における脱炭素化の先進事例として注目される。不動産開発×グリーンテックの融合という新潮流を牽引する取り組みとして、他の大手デベロッパーへの波及も予想される。",
+    "category": "PropTech",
+    "author": "LIGARE編集部",
+    "publishedAt": "2026-02-13T00:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop",
+    "source": "LIGARE",
+    "url": "https://ligare.news/story/hankyu-hanshin_20260213/",
+    "readTime": 3
+  },
+  {
+    "id": "41",
+    "title": "Breezy、住宅不動産向け「世界初の独立系AI OS」を発表——Ribbit Capital主導で10億円超を調達",
+    "description": "米Breezyが住宅不動産エージェント特化のAIオペレーティングシステムを正式ローンチ。Ribbit Capital主導の1,000万ドルプリシードを調達し、コンプ作成・パイプライン管理を全自動化する。",
+    "content": "米スタートアップBreezyが2026年2月2日、住宅不動産エージェント向け「世界初の独立系AIオペレーティングシステム」を正式ローンチした。創業者はトップエージェントのJames Harris（Million Dollar Listing LA出演）とAfterPay共同創業者のNick MolnarおよびAnthony Eisen。資金調達はRibbit Capital主導でプリシードラウンド1,000万ドル（約15億円）を実施。プラットフォームはコンプ（比較物件資料）の自動作成・商談記録・パイプライン自動更新・物件開発機会発見（「Underbuilt」）など、エージェントの煩雑な管理業務を全自動化する。週数時間かかる作業が数秒に短縮されると謳う。2026年H1に米国でのブロード展開を予定し、その後カナダ・英国・豪州・ドバイへ順次拡大。日本市場への参入も中長期的な視野に入っているとされる。",
+    "category": "AI・テック",
+    "author": "PR Newswire",
+    "publishedAt": "2026-02-02T00:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&auto=format&fit=crop",
+    "source": "PR Newswire",
+    "url": "https://www.prnewswire.com/news-releases/breezy-launches-the-worlds-first-independent-ai-operating-system-for-residential-real-estate-302676339.html",
+    "readTime": 4
+  },
+  {
+    "id": "42",
+    "title": "Smart BricksがAndreessen Horowitz主導で500万ドル調達——グローバル不動産のAIインフラを構築へ",
+    "description": "不動産向けAIネイティブインフラを手掛けるSmart Bricksが、a16z（Andreessen Horowitz）主導の500万ドルシード調達を完了。グローバル市場を対象とした不動産データの統合AIレイヤー構築を加速。",
+    "content": "不動産業界向けAIネイティブインフラプラットフォームを開発するSmart Bricksが、Andreessen Horowitz（a16z）主導のシードラウンドで500万ドル（約7.5億円）を調達したと2026年2月11日に発表した。同社はグローバル不動産市場向けのAIインフラ「レイヤー」を構築しており、物件データ・市場動向・法規制情報などを統合してリアルタイムで提供するプラットフォームを開発中だ。a16zはAI・フィンテック・不動産テックの交差点に位置する同社の可能性を高く評価したとされる。プロップテックへのAI特化投資が急増するなか、インフラ層を押さえる企業への注目が集まっており、大手VCが早期段階から参画する今回の調達はその象徴的な事例といえる。",
+    "category": "市場動向",
+    "author": "AI Smiley編集部",
+    "publishedAt": "2026-02-11T00:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop",
+    "source": "AI Smiley / EU-Startups",
+    "url": "https://www.eu-startups.com/2026/02/austrian-proptech-lystio-closes-e500k-round-to-refine-real-estate-portal-and-expand-across-europe",
+    "readTime": 3
+  },
+  {
+    "id": "43",
+    "title": "不動産業界の生成AI活用、問題は技術よりも「マインド醸成」——現場導入の壁と突破口を健美家が分析",
+    "description": "不動産投資・賃貸管理の現場で生成AI活用が広がる一方、最大の障壁は技術的問題ではなく「受け入れるマインドの醸成」にあるとする分析が注目を集めている。実務導入の成否を分ける要因を解説。",
+    "content": "不動産投資専門メディア「健美家」が2026年1月に掲載した分析記事が業界で話題になっている。テーマは「生成AI活用の現在地」で、技術的な実装よりも現場スタッフの意識変革こそが導入の最大の壁であると指摘する。物件紹介文の自動生成・入居者対応チャットボット・賃料査定AI・収益シミュレーション自動化など、活用場面は急速に広がっているが、ベテラン担当者の抵抗感や「AIへの過度な不信」が普及を妨げているという。一方で、段階的なパイロット導入や成功体験の共有、経営層のコミットメントがある企業では定着率が高いことも明らかになった。不動産管理会社・仲介会社の規模を問わず、2026年は「生成AI対応力」が競争力の差別化要因になると結論付けており、業界関係者の間で共感を呼んでいる。",
+    "category": "AI・テック",
+    "author": "健美家編集部",
+    "publishedAt": "2026-01-19T00:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop",
+    "source": "健美家",
+    "url": "https://www.kenbiya.com/ar/ns/jiji/etc/9763.html",
+    "readTime": 4
+  }
+]
