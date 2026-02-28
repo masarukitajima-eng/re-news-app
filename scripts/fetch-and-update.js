@@ -22,22 +22,56 @@ function loadEnvLocal() {
 loadEnvLocal();
 
 // ──────────────────────────────────────────
-// 検索クエリ設定
+// 検索クエリ設定（J-REITは日付フィルター付き・動的生成）
 // ──────────────────────────────────────────
-const QUERIES = [
-  // ── J-REIT（優先・先頭に配置）────────────────────────
-  { keyword: 'J-REIT 物件取得 適時開示',    category: 'JREIT' },
-  { keyword: 'REIT 不動産 取得 売却 投資法人', category: 'JREIT' },
-  { keyword: 'ジャパン リート 物件取得',     category: 'JREIT' },
-  { keyword: '投資法人 取得 ホテル オフィス 物流', category: 'JREIT' },
-  // ── 既存カテゴリ ──────────────────────────────────
-  { keyword: '不動産 AI',         category: 'AI・テック'  },
-  { keyword: '不動産テック',       category: 'PropTech'    },
-  { keyword: 'PropTech',          category: 'PropTech'    },
-  { keyword: 'CBRE 不動産',       category: 'CBRE'        },
-  { keyword: '商業不動産',         category: '商業不動産'  },
-  { keyword: '不動産 市場動向',    category: '市場動向'    },
-  { keyword: '不動産 人工知能',    category: 'AI・テック'  },
+
+/** 直近 n 日前の日付を "YYYY-MM-DD" 形式で返す */
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+function buildQueries() {
+  const d3 = daysAgo(3);   // 直近3日
+  const d7 = daysAgo(7);   // 直近1週間
+
+  return [
+    // ── J-REIT 直近3日間（最優先・適時開示重視）────────────────────
+    { keyword: `J-REIT 物件取得 after:${d3}`,             category: 'JREIT' },
+    { keyword: `投資法人 取得決定 after:${d3}`,           category: 'JREIT' },
+    { keyword: `J-REIT 売却 プレスリリース after:${d3}`,  category: 'JREIT' },
+    { keyword: `リート 適時開示 不動産取得 after:${d3}`,  category: 'JREIT' },
+
+    // ── 信頼ソース指定クエリ ─────────────────────────────────────
+    { keyword: 'site:japan-reit.com 物件 取得 売却',                    category: 'JREIT' },
+    { keyword: 'site:prtimes.jp 投資法人 物件取得 利回り',              category: 'JREIT' },
+    { keyword: 'site:japan-reit.com',                                    category: 'JREIT' },
+
+    // ── J-REIT 直近1週間（補完）──────────────────────────────────
+    { keyword: `投資法人 取得 ホテル オフィス 物流 after:${d7}`,       category: 'JREIT' },
+    { keyword: `REIT 不動産 取得 売却 利回り after:${d7}`,             category: 'JREIT' },
+    { keyword: `ジャパン リート 物件取得 after:${d7}`,                 category: 'JREIT' },
+
+    // ── 既存カテゴリ ─────────────────────────────────────────────
+    { keyword: '不動産 AI',         category: 'AI・テック'  },
+    { keyword: '不動産テック',       category: 'PropTech'    },
+    { keyword: 'PropTech',          category: 'PropTech'    },
+    { keyword: 'CBRE 不動産',       category: 'CBRE'        },
+    { keyword: '商業不動産',         category: '商業不動産'  },
+    { keyword: '不動産 市場動向',    category: '市場動向'    },
+    { keyword: '不動産 人工知能',    category: 'AI・テック'  },
+  ];
+}
+
+// J-REIT 信頼ソース（これらのドメインを優先的に処理）
+const JREIT_PRIORITY_SOURCES = [
+  'japan-reit.com',
+  'prtimes.jp',
+  'nikkei.com',
+  'nfm.nikkeibp.co.jp',
+  'ares.or.jp',
+  'tse.or.jp',
 ];
 
 const CATEGORY_IMAGES = {
@@ -153,6 +187,25 @@ function isEnglish(text) {
   return !/[\u3040-\u9FFF]/.test(text);
 }
 
+/**
+ * タイトル・ソースにJ-REIT関連ワードが含まれれば JREIT カテゴリと判定
+ * 投資法人名（○○リート、○○投資法人）や適時開示キーワードを検出
+ */
+function detectJREIT(title, source = '') {
+  const text = title + ' ' + source;
+  return (
+    // 投資法人・リート名の検出
+    /投資法人|[^\s・、。（）()]+リート|J-?REIT|Jリート/.test(text) &&
+    // 一般的な不動産AI/テック記事との混同を排除
+    !/AIチャット|AI生成|スマートホーム|DX推進/.test(title)
+  );
+}
+
+/** J-REIT優先ソースかどうか判定 */
+function isJREITPrioritySource(url) {
+  return JREIT_PRIORITY_SOURCES.some(domain => url.includes(domain));
+}
+
 let anthropicClient = null;
 
 function getAnthropicClient() {
@@ -257,23 +310,36 @@ async function main() {
   let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 100;
 
   const hasTranslation = !!process.env.ANTHROPIC_API_KEY;
-  // 1回の実行でClaudeを呼ぶ最大件数（コスト・速度制限）
-  const MAX_CLAUDE_CALLS = 20;
-  let claudeCalls = 0;
+  // Claude 呼び出し上限（J-REITは別カウンター・優先枠）
+  const MAX_CLAUDE_JREIT = 30;  // J-REIT は多めに割り当て
+  const MAX_CLAUDE_OTHER = 10;  // その他カテゴリ
+  let claudeJREIT = 0;
+  let claudeOther = 0;
+
+  const QUERIES = buildQueries();
 
   console.log(`既存記事数: ${existingIds.length} 件`);
-  console.log(`コンテンツ生成: ${hasTranslation ? `✅ ON (最大${MAX_CLAUDE_CALLS}件をリッチ化)` : '⚠️  OFF (ANTHROPIC_API_KEY なし)'}`);
+  console.log(`コンテンツ生成: ${hasTranslation ? `✅ ON (JREIT最大${MAX_CLAUDE_JREIT}件 / その他${MAX_CLAUDE_OTHER}件)` : '⚠️  OFF (ANTHROPIC_API_KEY なし)'}`);
+  console.log(`J-REIT クエリ: ${QUERIES.filter(q => q.category === 'JREIT').length} 件 (直近3日: ${daysAgo(3)} 以降)`);
   console.log('📡 Google News RSS を取得中...\n');
 
   const newArticles = [];
   const seenUrls    = new Set(existingUrls);
 
-  for (const { keyword, category } of QUERIES) {
-    process.stdout.write(`  [${category}] "${keyword}" ... `);
+  for (const { keyword, category: baseCategory } of QUERIES) {
+    process.stdout.write(`  [${baseCategory}] "${keyword.slice(0, 50)}" ... `);
     try {
       const xml   = await fetchRss(keyword);
-      const items = parseRssItems(xml);
+      let items   = parseRssItems(xml);
       let added   = 0;
+
+      // J-REITクエリの場合、優先ソースを先頭に並び替え
+      if (baseCategory === 'JREIT') {
+        items = [
+          ...items.filter(i => isJREITPrioritySource(i.link)),
+          ...items.filter(i => !isJREITPrioritySource(i.link)),
+        ];
+      }
 
       for (const item of items) {
         if (seenUrls.has(item.link)) continue;
@@ -287,21 +353,37 @@ async function main() {
         let description = (item.description || item.title).slice(0, 120);
         let content     = item.description || item.title;
 
-        // Claude でリッチコンテンツ生成（英語は翻訳、日本語もセクション化）
-        const isEng = isEnglish(title);
-        if (hasTranslation && claudeCalls < MAX_CLAUDE_CALLS) {
+        // ── カテゴリ確定：投資法人名が含まれれば JREIT に強制分類 ──
+        const effectiveCategory =
+          baseCategory !== 'JREIT' && detectJREIT(title, item.source)
+            ? 'JREIT'
+            : baseCategory;
+
+        const isEng    = isEnglish(title);
+        const isJREIT_ = effectiveCategory === 'JREIT';
+
+        // ── Claude でリッチコンテンツ生成 ──
+        // J-REIT は優先枠内で常に生成、その他は上限内で生成
+        const canEnrich = hasTranslation && (
+          isJREIT_ ? claudeJREIT < MAX_CLAUDE_JREIT
+                   : claudeOther < MAX_CLAUDE_OTHER
+        );
+
+        if (canEnrich) {
           process.stdout.write('\n    ✍️  生成中: ' + title.slice(0, 45) + '... ');
-          const rich = await generateRichContent(title, item.description || item.title, category, isEng);
+          const rich = await generateRichContent(
+            title, item.description || item.title, effectiveCategory, isEng,
+          );
           if (rich) {
             if (isEng && rich.title) title = rich.title;
             description = rich.description.slice(0, 120);
             content     = rich.content;
-            claudeCalls++;
+            isJREIT_ ? claudeJREIT++ : claudeOther++;
             process.stdout.write('✅\n');
           } else {
             process.stdout.write('(スキップ)\n');
           }
-          await sleep(300); // レートリミット対策
+          await sleep(300);
         }
 
         newArticles.push({
@@ -309,10 +391,10 @@ async function main() {
           title,
           description,
           content,
-          category,
+          category:    effectiveCategory,
           author:      item.source,
           publishedAt,
-          imageUrl:    pickImage(category),
+          imageUrl:    pickImage(effectiveCategory),
           source:      item.source,
           url:         item.link,
           readTime:    calcReadTime(content),
