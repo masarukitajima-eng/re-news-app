@@ -201,6 +201,16 @@ function detectJREIT(title, source = '') {
   );
 }
 
+/**
+ * JREIT記事が「具体的な物件取得・売却」を扱っているか判定
+ * 市況レポート・指数・ファンド組成などは除外し、取引情報のみ通す
+ */
+function isJREITTransaction(title) {
+  const transactionWords = /取得|売却|譲渡|購入|取得決定|売却決定|取得価格|売却価格|物件取得|物件売却|不動産取得|資産取得|資産売却/;
+  const excludeWords = /指数|ETF|市況|レポート|見通し|分析|ランキング|利回り平均|概況|決算|増配|減配|資金調達|起債|投資口|公募|募集|上場|格付け/;
+  return transactionWords.test(title) && !excludeWords.test(title);
+}
+
 /** J-REIT優先ソースかどうか判定 */
 function isJREITPrioritySource(url) {
   return JREIT_PRIORITY_SOURCES.some(domain => url.includes(domain));
@@ -240,26 +250,28 @@ async function generateRichContent(title, description, category, isEng = false) 
       ? `以下は英語の不動産ニュース記事です。日本語に翻訳したうえで執筆してください。\n\n英語タイトル: ${title}\n英語リード文: ${description}`
       : `以下の不動産ニュース記事について執筆してください。\n\nタイトル: ${title}\nリード文: ${description}`;
 
-    const titleField = isEng
-      ? '"title": "日本語タイトル（50文字以内・簡潔に）",'
+    // JREIT は常にタイトルを生成（【取得/売却】形式に統一）、英語も同様
+    const titleField = (isEng || category === 'JREIT')
+      ? category === 'JREIT'
+        ? '"title": "【取得】または【売却】で始まる物件名（価格）形式のタイトル（例：【取得】ハイアット リージェンシー 東京（1,260億円））",'
+        : '"title": "日本語タイトル（50文字以内・簡潔に）",'
       : '';
 
     // J-REIT 専用の追加指示（取得価格・利回り・物件名・取得先を必須記載）
     const jreitNote = category === 'JREIT'
-      ? `\nこれはJ-REIT（不動産投資信託）の物件売買情報です。以下の要素を必ず本文に含めてください（不明な場合は「未開示」と記載）：\n  - 物件名または物件種別\n  - 取得価格または売却価格（億円）\n  - 期待利回り（%）\n  - 取得先・売却先（前所有者）`
+      ? `\nこれはJ-REIT（不動産投資信託）の具体的な物件取得・売却情報です。以下の要素を必ず本文に含めてください（不明な場合は「未開示」と記載）：\n  - 物件名（正式名称）\n  - 取得価格または売却価格（億円）\n  - 期待利回り（%）\n  - 取得先・売却先（前所有者または売却先）\n\nタイトルは必ず「【取得】物件名（価格億円）」または「【売却】物件名（価格億円）」の形式にしてください。価格不明の場合は「（価格未開示）」。`
       : '';
 
+    // JREIT でも 要約・日本への影響・注目点 の標準3セクションに統一
     const sectionGuide = category === 'JREIT'
       ? `- 【要約】: 物件名・取得価格・利回りを含む取引概要を2〜3文で
-- 【投資家への注目点】: この取引が投資家・市場に与える意義を2〜3文
-- 【物件詳細】: 物件の特徴・立地・取得先など取引の詳細を2〜3文`
+- 【日本への影響】: この取引がJ-REIT市場・投資家・不動産市況に与える影響を2〜3文
+- 【注目点】: 物件の特徴・立地・取得先・投資戦略上の意義を2〜3文`
       : `- 【要約】: 記事の核心を2〜3文で簡潔に
 - 【日本への影響】: 日本の不動産市場・業界に与える影響を独自の視点で具体的に2〜3文
 - 【注目点】: 技術的またはビジネスモデルの特筆すべきポイントを2〜3文`;
 
-    const contentTemplate = category === 'JREIT'
-      ? `"content": "【要約】: （ここにテキスト）。\\n\\n【投資家への注目点】: （ここにテキスト）。\\n\\n【物件詳細】: （ここにテキスト）。"`
-      : `"content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"`;
+    const contentTemplate = `"content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"`;
 
     const prompt = `あなたは不動産・J-REIT専門の日本語アナリストです。
 ${sourceNote}
@@ -359,6 +371,11 @@ async function main() {
             ? 'JREIT'
             : baseCategory;
 
+        // ── JREIT は「具体的な物件取得・売却」のみに厳格限定 ──
+        if (effectiveCategory === 'JREIT' && !isJREITTransaction(title)) {
+          continue; // 市況・指数・決算・公募などは除外
+        }
+
         const isEng    = isEnglish(title);
         const isJREIT_ = effectiveCategory === 'JREIT';
 
@@ -375,7 +392,7 @@ async function main() {
             title, item.description || item.title, effectiveCategory, isEng,
           );
           if (rich) {
-            if (isEng && rich.title) title = rich.title;
+            if ((isEng || isJREIT_) && rich.title) title = rich.title;
             description = rich.description.slice(0, 120);
             content     = rich.content;
             isJREIT_ ? claudeJREIT++ : claudeOther++;
