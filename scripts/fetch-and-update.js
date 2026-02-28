@@ -435,7 +435,10 @@ async function main() {
   const newEntries  = newArticles
     .map(a => '  ' + JSON.stringify(a, null, 2).replace(/\n/g, '\n  '))
     .join(',\n');
-  ts = ts.slice(0, insertPoint) + newEntries + ',\n' + ts.slice(insertPoint);
+  // 直前の既存記事との間にカンマが必要かチェック（JSON.stringifyで書き直した場合はカンマなし）
+  const before = ts.slice(0, insertPoint).trimEnd();
+  const separator = before.endsWith('}') ? ',\n' : '\n';
+  ts = ts.slice(0, insertPoint) + separator + newEntries + ',\n' + ts.slice(insertPoint);
   fs.writeFileSync(mockPath, ts, 'utf8');
 
   const totalCount = [...ts.matchAll(/"id": "(\d+)"/g)].length;

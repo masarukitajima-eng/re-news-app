@@ -13793,7 +13793,7 @@ export const mockArticles: Article[] = [
     "source": "digital-construction.jp",
     "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFB2YnBCSXc2ZzhCYjNYYnJsV21kNkJwcnhmVVdTN0NxOW5xSFNQenlEVFBPUERTTXB5XzFpbnF4RWhFWnBOTVN6eG42Y1RCczZIUkJB?oc=5",
     "readTime": 1
-  }
+  },
   {
     "id": "1062",
     "title": "データセンター不動産市場における機会 - JLL",
