@@ -157,31 +157,47 @@ function getAnthropicClient() {
 }
 
 /**
- * Claude API を使って英語記事を日本語に翻訳
- * @returns {{ title, description, content } | null}
+ * Claude API で記事を日本語リッチコンテンツに変換（英語は翻訳も）
+ * content は【要約】【日本への影響】【注目点】の3セクション構成
+ * @param {string} title
+ * @param {string} description
+ * @param {string} category
+ * @param {boolean} isEng - 英語記事の場合 true（タイトルも翻訳する）
+ * @returns {{ title?, description, content } | null}
  */
-async function translateToJapanese(title, description, category) {
+async function generateRichContent(title, description, category, isEng = false) {
   const client = getAnthropicClient();
   if (!client) return null;
 
   try {
-    const prompt = `あなたは不動産・PropTech専門の日本語ライターです。
-以下の英語の不動産ニュース記事を日本語に翻訳・要約してください。
+    const sourceNote = isEng
+      ? `以下は英語の不動産ニュース記事です。日本語に翻訳したうえで執筆してください。\n\n英語タイトル: ${title}\n英語リード文: ${description}`
+      : `以下の不動産ニュース記事について執筆してください。\n\nタイトル: ${title}\nリード文: ${description}`;
+
+    const titleField = isEng
+      ? '"title": "日本語タイトル（50文字以内・簡潔に）",'
+      : '';
+
+    const prompt = `あなたは不動産・PropTech専門の日本語アナリストです。
+${sourceNote}
 
 カテゴリ: ${category}
-タイトル: ${title}
-リード文: ${description}
 
-以下のJSON形式のみで返してください（コードブロック不要）:
+以下の3セクション構成で記事本文を執筆してください:
+- 【要約】: 記事の核心を2〜3文で簡潔に
+- 【日本への影響】: 日本の不動産市場・業界に与える影響を独自の視点で具体的に2〜3文
+- 【注目点】: 技術的またはビジネスモデルの特筆すべきポイントを2〜3文
+
+JSONのみで返してください（コードブロック不要）:
 {
-  "title": "日本語タイトル（簡潔に、50文字以内）",
-  "description": "日本語のリード文（記事の要点を120文字以内で）",
-  "content": "日本語の本文（300文字程度で詳しく解説）"
+  ${titleField}
+  "description": "記事の核心を1〜2文で（120文字以内）",
+  "content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"
 }`;
 
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -189,13 +205,12 @@ async function translateToJapanese(title, description, category) {
       .replace(/^```json\s*/i, '').replace(/\s*```$/, '');
     const parsed = JSON.parse(text);
 
-    // 必須フィールドの確認
-    if (!parsed.title || !parsed.description || !parsed.content) {
-      throw new Error('翻訳結果に必須フィールドがありません');
+    if (!parsed.description || !parsed.content) {
+      throw new Error('必須フィールドがありません');
     }
     return parsed;
   } catch (e) {
-    console.warn(`  ⚠️  翻訳失敗 ("${title.slice(0, 30)}..."): ${e.message}`);
+    console.warn(`  ⚠️  生成失敗 ("${title.slice(0, 30)}..."): ${e.message}`);
     return null;
   }
 }
@@ -213,8 +228,12 @@ async function main() {
   let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 100;
 
   const hasTranslation = !!process.env.ANTHROPIC_API_KEY;
+  // 1回の実行でClaudeを呼ぶ最大件数（コスト・速度制限）
+  const MAX_CLAUDE_CALLS = 20;
+  let claudeCalls = 0;
+
   console.log(`既存記事数: ${existingIds.length} 件`);
-  console.log(`翻訳機能: ${hasTranslation ? '✅ ON (ANTHROPIC_API_KEY あり)' : '⚠️  OFF (ANTHROPIC_API_KEY なし)'}`);
+  console.log(`コンテンツ生成: ${hasTranslation ? `✅ ON (最大${MAX_CLAUDE_CALLS}件をリッチ化)` : '⚠️  OFF (ANTHROPIC_API_KEY なし)'}`);
   console.log('📡 Google News RSS を取得中...\n');
 
   const newArticles = [];
@@ -239,14 +258,16 @@ async function main() {
         let description = (item.description || item.title).slice(0, 120);
         let content     = item.description || item.title;
 
-        // 英語記事を翻訳
-        if (isEnglish(title) && hasTranslation) {
-          process.stdout.write('\n    🔄 翻訳中: ' + title.slice(0, 50) + '... ');
-          const translated = await translateToJapanese(title, item.description || item.title, category);
-          if (translated) {
-            title       = translated.title;
-            description = translated.description.slice(0, 120);
-            content     = translated.content;
+        // Claude でリッチコンテンツ生成（英語は翻訳、日本語もセクション化）
+        const isEng = isEnglish(title);
+        if (hasTranslation && claudeCalls < MAX_CLAUDE_CALLS) {
+          process.stdout.write('\n    ✍️  生成中: ' + title.slice(0, 45) + '... ');
+          const rich = await generateRichContent(title, item.description || item.title, category, isEng);
+          if (rich) {
+            if (isEng && rich.title) title = rich.title;
+            description = rich.description.slice(0, 120);
+            content     = rich.content;
+            claudeCalls++;
             process.stdout.write('✅\n');
           } else {
             process.stdout.write('(スキップ)\n');
