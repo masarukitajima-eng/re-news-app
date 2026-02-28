@@ -15370,6 +15370,111 @@ export const mockArticles: Article[] = [
     "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBIU3k4R3ItRmxMYzQ5M1FzcWZKMkJtMjEtSTZ2YmoyYVZUb3p5cWtQbDQtVjBLU0U5MzFpRzgwYlBNNWdTczRQcDlVOTVXQktmNkk2ckxsSDg4SktWMGtzbXNLQmJXd2xleGc?oc=5",
     "readTime": 1
   },
+
+  {
+    "id": "1186",
+    "title": "【売却】IIF大阪南港ITソリューションセンター（価格未開示）",
+    "description": "産業ファンド投資法人がIIF大阪南港ITソリューションセンターを売却。ポートフォリオの最適化と資金調達戦略の一環と位置付けられる。",
+    "content": "【要約】: 産業ファンド投資法人は、保有するIIF大阪南港ITソリューションセンター（正式名称：IIF大阪南港ITソリューションセンター）を売却することを決定した。売却価格は未開示だが、本取引はポートフォリオの戦略的再編成の一部として実行される。売却先および期待利回りについても未開示となっている。\n\n【日本への影響】: 本売却はJ-REIT市場におけるポートフォリオ入れ替えの動きを示すものであり、産業用不動産セクターの流動性と市場効率性を高める効果が期待される。IT関連施設の売却を通じた資金の再配分により、他の成長性の高い物件への投資機会が創出される可能性があり、セクター全体の資本最適化に寄与する。\n\n【注目点】: IIF大阪南港ITソリューションセンターは大阪湾エリアの重要なIT関連施設であり、大規模データセンター需要の高い立地に位置している。本売却は産業ファンド投資法人の投資戦略の転換を示す重要な取引であり、今後のポートフォリオ構成の変化に注視が必要である。",
+    "category": "JREIT",
+    "author": "JAPAN-REIT.COM",
+    "publishedAt": "2022-07-06T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&auto=format&fit=crop",
+    "source": "JAPAN-REIT.COM",
+    "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5DblVVVjBuSEliaksyNkUxLTFWVXJIakRZbDRQRUdEdjl0UmhQWmV6ajFyX3EwYlVfdGlOU29JelppNGxyZm84UldnYmZpVFVSb1VOUDNVbWxLdF91dlVWeDFOS2k?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1187",
+    "title": "【取得】横浜STビル（価格未開示）",
+    "description": "日本ビルファンド投資法人が横浜STビルを追加取得。同法人のポートフォリオ拡大と都市部への投資戦略強化が進む。",
+    "content": "【要約】日本ビルファンド投資法人が横浜STビルを追加取得した。取得価格は未開示だが、同法人は神奈川県横浜市における賃貸オフィス物件への投資を継続的に拡大している。期待利回りについても未開示となっている。\n\n【日本への影響】本件取得により、日本ビルファンド投資法人のポートフォリオの多地域分散が進み、都市部における物件ネットワークが強化される。大都市圏での優良オフィス物件の取得は、J-REIT市場全体における地方都市への投資拡大トレンドを反映している。\n\n【注目点】横浜は東京圏の有力サテライト都市として、オフィス需要が堅調な地域である。既存保有物件に追加取得することで、管理効率の向上とテナント基盤の強化が期待される。同法人の投資戦略上、都市部ビルファンドとしての競争力強化に寄与する重要な施策と言える。",
+    "category": "JREIT",
+    "author": "JAPAN-REIT.COM",
+    "publishedAt": "2021-12-03T13:32:03.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=800&auto=format&fit=crop",
+    "source": "JAPAN-REIT.COM",
+    "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1nYlZkaWpPWmMxZVZKSW9yNk9Uc2VIMFJfLWM2WnpUeVdWZF9oXzlEU09jaEZDYklYMW94VmRxbDNCYWxLY0ZWYUpVNnhodDJBeVQ1MWpaZmk1SzBYdXZhWEtiRHk?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1188",
+    "title": "OpendoorとZillow：どちらの不動産テック株が現在より大きな成長可能性を持っているか？ - Bitget",
+    "description": "米国の不動産テック大手OpendoorとZillowの成長性を比較分析。それぞれのビジネスモデルと市場ポジションから投資機会を検討する。",
+    "content": "【要約】: OpendoorはiBuyerモデルで直接買取を行い、Zillowはプラットフォーム型で情報・マッチング機能に特化しており、両社は異なる成長戦略を展開している。米国不動産市場の変動や金利環境の影響を受けながらも、それぞれの事業モデルが異なるリスク・リターン特性を有しており、投資家のポートフォリオ目的に応じた選別が重要である。\n\n【日本への影響】: 日本の不動産テック企業は、OpendoorやZillowのビジネスモデルを参考に、買取仲介プラットフォームや情報集約型サービスの構築を加速させる可能性がある。特にiPhoneやAndroidなどのモバイルプラットフォームの浸透により、不動産の非対面取引やデジタル査定の需要が高まり、国内PropTech企業の競争力強化につながるだろう。\n\n【注目点】: OpendoorのiByerモデルは在庫リスクを負う一方で利益率が高く、Zillowのプラットフォーム型は利益率は低いがスケーラビリティに優れている点が特筆される。これらのモデルの優劣は市場環境（金利・住宅価格変動）に大きく左右され、景気循環における耐性の差が長期的なリターンを決定する要因となるだろう。",
+    "category": "PropTech",
+    "author": "Bitget",
+    "publishedAt": "2026-02-27T02:30:58.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop",
+    "source": "Bitget",
+    "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1UTlNUaEtxODEzTjFFRlVrSi1BTUUteFVWdHMyQ21fWUdKNmtBYnZRbTlaQ2pYMm02UnY3NDdpR3FUS2t6ZHZDbU9EUWx3Nllsdnhya29QTFNlY2tHeklxUU130gFnQVVfeXFMTzYySjFUM0VZUXhqMnBpTlB0VTVNb0JJMll2aW9lMjZJZUMwN05NV3V3bHpOdzhTTU94b21DMHJ5bDljRU9sZVJnNXA0Y3NTdkJ0cEFSOUN5b2VwNk1KM0pMSEtaZTRMOA?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1189",
+    "title": "「ロードスターキャピタル」不動産テックの北極星を目指す｜プロが読む 次のブレーク銘柄 - 日刊ゲンダイDIGITAL",
+    "description": "ロードスターキャピタルが不動産テック業界で急速に成長し、プロから次のブレーク銘柄として注目されている。同社のビジネスモデルと市場展望を分析する。",
+    "content": "【要約】: ロードスターキャピタルは、AI・データ分析を活用した不動産情報プラットフォームで、従来の不動産流通の非効率性を解決する企業として急速に注目を集めている。同社は不動産テック領域における「北極星」としての地位を確立し、次世代の成長銘柄候補として市場評価が高まっている。\n\n【日本への影響】: 日本の不動産市場は高齢化による既存住宅の流通増加が見込まれる中で、ロードスターキャピタルの技術活用は流通効率化に大きく貢献する可能性がある。同社のモデルが浸透することで、大手仲介業者と比較して透明性が高く低コストな不動産取引環境が実現され、個人投資家や小規模事業者の参入機会が拡大することが期待される。\n\n【注目点】: 同社のAI・データ分析基盤は膨大な不動産取引データを構造化し、価格予測や物件評価の精度向上を実現している点が特筆すべき。また、B2B・B2Cの両面でのプラットフォーム展開により、仲介業者から個人ユーザーまで幅広い顧客層にアクセス可能な拡張性の高いビジネスモデルを構築している。",
+    "category": "PropTech",
+    "author": "日刊ゲンダイDIGITAL",
+    "publishedAt": "2026-02-13T08:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop",
+    "source": "日刊ゲンダイDIGITAL",
+    "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ueVFDMjZTd2Y5bDVLTnctTDB0RXpoU293ME82VDhPNmYzWm41R2VzaGwxcFQ0MnhhVF9wRWJDSUpJRjNBbEtKcEdTeVFqUVU5aC1fcjFkNXZERHo0RjhBd2Nmc2tyWTA?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1190",
+    "title": "人工衛星とAIで不動産登記と現況の差を見える化 「宇宙から地球の不動産市場を変える」WHERE - ITmedia",
+    "description": "衛星画像とAI技術を活用して、不動産登記簿と現況の乖離を可視化するWHEREのソリューションが、不動産市場の透明性向上と効率化をもたらす。",
+    "content": "【要約】: WHEREが人工衛星とAI技術を組み合わせ、不動産登記と現況のズレを自動検出するプラットフォームを展開している。登記簿の古い情報と実際の土地利用状況の差異を可視化することで、不動産取引の信頼性向上と市場の効率化を実現する革新的なアプローチである。\n\n【日本への影響】: 日本の不動産市場において深刻な課題である登記情報の老朽化や所有者不明土地の問題解決に貢献する可能性が高い。衛星データの活用により、従来の現地調査に依存していた不動産デューデリジェンスのコスト削減と迅速化が期待でき、特に地方の小規模物件取引の活性化につながる可能性がある。\n\n【注目点】: 衛星画像とAIの組み合わせにより、広大な範囲を低コストで継続的に監視できる点が革新的である。また、登記情報の正確化を通じて不動産市場全体の透明性が向上し、J-REITを含む機関投資家のポートフォリオ管理精度向上にも間接的に寄与する可能性がある。",
+    "category": "PropTech",
+    "author": "ITmedia",
+    "publishedAt": "2025-10-07T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
+    "source": "ITmedia",
+    "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBYbmRPU2h4SmZPYW1heEI3d3V5S2xZVlRPUXJZOEFidGotQUVOUWZuRGZ3RGhDTWRCYmdfdkV0NXZLUGtRZGZodzBfLURxdE8yV0M3RVBWb0JhWF9pUV8xUU5hX1p2YzRsTU41NQ?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1191",
+    "title": "WarrenAI、2026年に注目すべき不動産テック株：グーグルの脅威にもかかわらずジロー社がリード 執筆 - Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース",
+    "description": "2026年の不動産テック市場でジロー社がGoogleの競争圧力にもかかわらずリード企業として注目されている。AI技術を活用した不動産取引プラットフォームの差別化が進む。",
+    "content": "【要約】: WarrenAIの分析によると、2026年の不動産テック業界ではジロー社がGoogle等の大手IT企業による参入圧力にもかかわらず、AIを活用した革新的なプラットフォームで市場をリードすると予想されている。同社の専門性とデータ活用能力が競争優位性を確保している。\n\n【日本への影響】: 日本の不動産テック企業は、米国市場での技術トレンドを参考に、AIやデータ分析を核とした差別化戦略を急務とされている。大型IT企業による不動産市場への侵食に対抗するため、日本の不動産仲介業者も業界特性を理解した専門ソリューション開発が重要になる。マンション管理やREIT運用など日本特有の市場ニーズに対応したPropTechの発展機会が広がるとみられる。\n\n【注目点】: ジロー社の成功要因は、単なる技術導入ではなく不動産業界の深い知見とAIの融合にある。一方、Googleなど大手プラットフォーマーの参入は業界の再編を加速させ、専門特化型と汎用型の二極化が進むと考えられる。日本市場でも同様のトレンドが顕在化する可能性がある。",
+    "category": "PropTech",
+    "author": "Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース",
+    "publishedAt": "2025-12-16T08:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop",
+    "source": "Investing.com - FX | 株式市場 | ファイナンス | 金融ニュース",
+    "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5wTnZsVmZlellWQVVOcnNhRXl2eUwyUmo5Vk5xVWJST2gtRXhPV240M0x4MW9iMUsydlQ0dzNqckJ3XzdXcExIdWNiWVgtX0xXTmtCWTBXZ2Q3MFRUOWduRUlRMnptZGh1OGJsMzRhNGNRM2ViQ1hv?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1192",
+    "title": "【無料ウェビナー開催】『0から始める！不動産業界のためのSNS動画制作入門』を8月25日(月)に開催 - PR TIMES",
+    "description": "不動産業界向けのSNS動画制作ウェビナーが8月25日に無料開催される。デジタルマーケティング初心者向けの実践的な動画制作講座で、業界のデジタル化を加速させる。",
+    "content": "【要約】：不動産業界を対象とした『0から始める！不動産業界のためのSNS動画制作入門』ウェビナーが8月25日(月)に無料開催される。本セミナーは、動画制作の経験がない初心者向けに、SNS上での効果的な動画制作方法を実践的に学べる内容となっている。不動産企業のデジタルマーケティング強化を支援する企画である。\n\n【日本への影響】：日本の不動産市場では、デジタル化の進展に伴い、SNS動画活用が営業効率化と顧客獲得の重要な手段として急速に認識されつつあり、本ウェビナーはそうした変化への実務的対応を促進する。特に中小規模の不動産企業やエージェントにおいて、低コストでの動画制作スキル習得の機会となり、業界全体のデジタルリテラシー向上に寄与する見込みである。\n\n【注目点】：PropTech領域における「教育・人材育成」への投資が拡大している傾向を示しており、不動産業界がデジタル変革に必要なスキル習得を積極的にサポートしていることが特徴。無料ウェビナー形式により、参入障壁を下げながら業界全体のデジタル人材化を推進する戦略的なアプローチといえる。",
+    "category": "PropTech",
+    "author": "PR TIMES",
+    "publishedAt": "2025-08-11T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBWYTAwckhwSk14bmQtZWhvSnl6WDhnaTg5clI4VFBVY1VkOHdYb3pwR1QxTWI4Y05hNTBSUHdEUG9JYUVaVzFFajAzdlhqRWI5WTJYTGdDTTNORTZwSXFNZmt1dnMtUjFQdGc?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1193",
+    "title": "首都圏賃貸市場動向：CRIX指標を活用した最新のエリア別分析 - PR TIMES",
+    "description": "首都圏賃貸市場の動向をCRIX指標を用いて、エリア別に詳細に分析した最新レポート。市場の地域差と価格変動を可視化。",
+    "content": "【要約】：首都圏賃貸市場がCRIX指標により、従来の大雑把な市場分析から、より精密なエリア別分析へシフトしている。この指標活用により、千代田区・渋谷区などの中核エリアと周辺エリアの賃料推移の差異が明確化され、投資判断の精度向上に寄与している。\n\n【日本への影響】：CRIX指標などの高度なデータ分析手法の普及により、不動産投資家やJ-REIT運用会社のポートフォリオ最適化が加速する見込みである。特に地域別リターンの可視化が進むことで、首都圏周辺部への機関投資家の流入が促進され、地価・賃料の地域間格差が是正される可能性がある。同時に、データドリブン経営が定着することで、業界全体の透明性と効率性が向上し、市場の成熟化が加速するだろう。\n\n【注目点】：CRIX指標は、複数の賃貸物件データを統計的に処理した信頼性の高い価格指数であり、従来の簿価評価や概況的な市場分析の限界を克服している。このような客観的・定量的なベンチマークの活用は、REITの運用報告書やIR情報の充実にも直結し、機関投資家の投資判断材料としての価値が急速に高まっている点が重要である。",
+    "category": "市場動向",
+    "author": "PR TIMES",
+    "publishedAt": "2025-09-16T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1642790551116-18e4f77d7a66?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBtcXMxQ1JlS29vOF9vSzNkRXJpTHVjRFhiNzh1bEtRWi05bWk5TWNkd0llS045N3otUncxSWgya1FaZGJfM3pSemZiQkFDcFZNR1VraXJGTWMzZlUteDVkRVZxOTFQMmdVSWc?oc=5",
+    "readTime": 1
+  },
 ];
 
 export const categories = ['トップ', 'JREIT', 'HORIE', 'CBRE', 'AI・テック', 'PropTech', '商業不動産', '市場動向'] as const;
