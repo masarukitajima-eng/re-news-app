@@ -39,13 +39,15 @@ function parseAnalysis(content: string): { label: string; body: string }[] {
 
 // テキスト内の \n を段落/<br> に変換するレンダラー
 function renderBody(text: string): React.ReactNode {
-  const paragraphs = text.split(/\n\n+/);
+  // リテラルの \n（エスケープされた文字列）も実際の改行として扱う
+  const normalized = text.replace(/\\n/g, '\n');
+  const paragraphs = normalized.split(/\n\n+/);
   return (
     <>
       {paragraphs.map((para, pi) => {
         const lines = para.split('\n');
         return (
-          <p key={pi} className="text-gray-800 text-base leading-relaxed mb-3 last:mb-0">
+          <p key={pi} className="text-gray-800 text-[17px] leading-[1.85] tracking-wide mb-5 last:mb-0">
             {lines.map((line, li) => (
               <React.Fragment key={li}>
                 {line}
@@ -106,7 +108,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug tracking-tight mb-4">
           {article.title}
         </h1>
 
@@ -122,9 +124,9 @@ export default async function ArticlePage({ params }: Props) {
         {/* Structured analysis sections */}
         <div className="space-y-6">
           {sections.map((section, i) => (
-            <div key={i} className={section.label ? 'bg-gray-50 rounded-xl p-4' : ''}>
+            <div key={i} className={section.label ? 'bg-gray-50 rounded-xl p-5' : ''}>
               {section.label && (
-                <h2 className="flex items-center gap-1.5 text-sm font-bold text-[#FA2D48] mb-2.5">
+                <h2 className="flex items-center gap-1.5 text-[15px] font-bold text-[#FA2D48] mb-3">
                   <span className="w-1 h-4 bg-[#FA2D48] rounded-full flex-shrink-0" />
                   {section.label}
                 </h2>
