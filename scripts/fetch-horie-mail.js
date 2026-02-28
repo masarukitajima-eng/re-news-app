@@ -27,9 +27,14 @@ function loadEnvLocal() {
 }
 loadEnvLocal();
 
-const SENDER_PATTERN  = /堀江貴文|horiemon|mag2.*0001092981/i;
-const SUBJECT_PATTERN = /堀江貴文.*メルマガ|ホリエモンメルマガ|vol\.\d+/i;
+const SENDER_PATTERN  = /堀江貴文|horiemon|mag2.*0001092981|mag2premium/i;
+const SUBJECT_PATTERN = /堀江貴文|ホリエモン|vol\.\d+|0001092981/i;
 const FETCH_COUNT     = 5; // 最新N件を取得
+
+// 検索対象メールボックス（INBOX + すべてのメール）
+const MAILBOXES_TO_SEARCH = ['INBOX', '[Gmail]/All Mail'];
+// 検索する送信者パターン
+const SEARCH_FROM_PATTERNS = ['@mag2.com', '@mag2premium.com'];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -127,19 +132,57 @@ async function main() {
   });
 
   await imap.connect();
-  await imap.mailboxOpen('INBOX');
 
-  // 送信者 or 件名でホリエモンメルマガを検索
+  // 複数メールボックス × 複数送信者パターンで広範囲に検索
   const messages = [];
-  for await (const message of imap.fetch(
-    { from: '@mag2.com' },
-    { uid: true, envelope: true, bodyStructure: true, source: true },
-    { changedSince: BigInt(0) },
-  )) {
-    const from = (message.envelope.from || []).map(f => `${f.name || ''} ${f.address || ''}`).join(' ');
-    const subject = message.envelope.subject || '';
-    if (SENDER_PATTERN.test(from) || SENDER_PATTERN.test(subject) || SUBJECT_PATTERN.test(subject)) {
-      messages.push(message);
+  const seenMsgIds = new Set();
+
+  for (const mailbox of MAILBOXES_TO_SEARCH) {
+    try {
+      await imap.mailboxOpen(mailbox, { readOnly: true });
+      console.log(`  📂 ${mailbox} を検索中...`);
+    } catch (e) {
+      console.log(`  ⚠️  ${mailbox}: スキップ (${e.message})`);
+      continue;
+    }
+
+    // 送信者ドメインで検索
+    for (const fromPat of SEARCH_FROM_PATTERNS) {
+      try {
+        for await (const message of imap.fetch(
+          { from: fromPat },
+          { uid: true, envelope: true, source: true },
+        )) {
+          const from    = (message.envelope.from || []).map(f => `${f.name || ''} ${f.address || ''}`).join(' ');
+          const subject = message.envelope.subject || '';
+          const msgId   = message.envelope.messageId || `${mailbox}-${message.uid}`;
+          if (seenMsgIds.has(msgId)) continue;
+          if (SENDER_PATTERN.test(from) || SENDER_PATTERN.test(subject) || SUBJECT_PATTERN.test(subject)) {
+            seenMsgIds.add(msgId);
+            messages.push(message);
+          }
+        }
+      } catch (e) {
+        console.log(`  ⚠️  ${fromPat} 検索エラー: ${e.message}`);
+      }
+    }
+
+    // キーワードで追加検索（件名に「堀江貴文」or「0001092981」）
+    for (const keyword of ['堀江貴文', '0001092981']) {
+      try {
+        for await (const message of imap.fetch(
+          { subject: keyword },
+          { uid: true, envelope: true, source: true },
+        )) {
+          const msgId = message.envelope.messageId || `${mailbox}-${message.uid}`;
+          if (!seenMsgIds.has(msgId)) {
+            seenMsgIds.add(msgId);
+            messages.push(message);
+          }
+        }
+      } catch (e) {
+        console.log(`  ⚠️  件名検索 "${keyword}" エラー: ${e.message}`);
+      }
     }
   }
 
