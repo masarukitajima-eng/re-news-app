@@ -14106,6 +14106,45 @@ export const mockArticles: Article[] = [
     "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1aMUFic0ZibXlnamVnRVlzd2VTckQybENxYWdXTkNCYlBjMldhV0ZMVElUTXAtclZzLUc2UVRkODlGTlZzbUdsVzYtZk1VT0hwMGFqd1gzQmlzRmNCaU5qQ3dpZ3IzdUhoVmtRYUtJQdIBf0FVX3lxTFBvbDRSRHZ4QnNWMW9sMkpSUU1MRE4xX3VsMEZNM096d1lMdWt3Z1JMcVhyMzVBYTl6YzhKVjVFX3ZwVWw5aTE4OExDUndWQ0VYejFEZW1rNVhINTRtcWVjU3E3ZFR5RkYtLTVraXJ5RkxRdEVsQkVUNklmTmR3djQ?oc=5",
     "readTime": 1
   },
+  {
+    "id": "1086",
+    "title": "第840号｜AIエージェント時代のビジネスモデル——人間がやるべき仕事はゼロになる",
+    "description": "AIエージェントの台頭により「人間しかできない仕事」の定義が根本から崩壊しつつある。堀江貴文が840号で説く、これからの個人・企業の生き残り戦略。",
+    "content": "【要約】: AIエージェントが2026年に入り急速に実用化され、法律・医療・会計・コンサルといったホワイトカラー職の大半をAIが代替し始めている。堀江氏はもはや人間にしかできない仕事を探すのは意味がない、AIをどう使いこなすかが唯一の差別化要因だと断言する。特にLLMを組み込んだエージェントが複数タスクを自律実行できるようになったことで、個人事業主レベルでも大企業並みのアウトプットが出せる時代になった。\n\n【日本への影響】: 日本企業の多くはいまだにExcelと人力オペレーションで業務を回しており、AIエージェント導入の遅れが国際競争力の致命傷になると堀江氏は警告する。特に不動産・建設・法務の分野では、書類作成・審査・契約の自動化が進む海外勢に対して数年以内に大きく後れを取る可能性がある。一方で、早期に乗り換えた中小企業が大企業を逆転するチャンスでもある。\n\n【注目点】: 堀江氏が注目するのは、AIエージェントにタスクを発注する能力そのものの希少価値化だ。プロンプトエンジニアリングではなく、プロジェクトマネジメント的にAIを動かせる人材が最高報酬を得る構造になる。また、個人が複数のAIエージェントをチームとして運用するスタイルが、2026年中に主流になるという見立ても示した。",
+    "category": "HORIE",
+    "author": "堀江貴文",
+    "publishedAt": "2026-02-26T06:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&auto=format&fit=crop",
+    "source": "堀江貴文メルマガ vol.840",
+    "url": "https://www.mag2.com/m/0001092981",
+    "readTime": 3
+  },
+  {
+    "id": "1087",
+    "title": "第840号｜ビジネスモデル塾：サブスクからトークン経済へ——次の10年を支配するマネタイズ設計",
+    "description": "サブスクリプションモデルが成熟飽和する中、トークンやポイント経済圏を軸にした新しい収益設計が台頭している。堀江貴文が具体的な事例とともに解説。",
+    "content": "【要約】: NetflixやSpotifyが象徴するサブスクモデルは成長の天井に達しつつあり、次の主役は「トークン経済圏」だと堀江氏は指摘する。ユーザーが価値創造に参加し、その貢献に応じてトークンや独自ポイントが付与される仕組みが、ロイヤルティとLTV（顧客生涯価値）を飛躍的に高める。WEB3の投機的ブームが収束した今こそ、実需ベースのトークン設計が普及する好機だ。\n\n【日本への影響】: 日本では楽天ポイント・Tポイント・PayPayといったポイント経済圏が既に強固だが、これらは企業主導の一方向的設計にとどまっている。堀江氏は「ユーザーがコンテンツ・情報・推薦行動で価値を生み出し、その分配を受け取れる設計こそが次の勝者」と述べ、SNSやメルマガをプラットフォームと捉えた個人発信者のマネタイズ革命を予告する。\n\n【注目点】: 堀江氏自身のメルマガ・オンラインサロンモデルも進化中で、読者の推薦や口コミに対してインセンティブを設計する実験を行っているという。また、不動産クラウドファンディングとトークン経済の融合事例として、小口投資家が物件評価に参加して報酬を得るモデルへの言及があり、RE-TECHとの親和性が高い。",
+    "category": "HORIE",
+    "author": "堀江貴文",
+    "publishedAt": "2026-02-26T06:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop",
+    "source": "堀江貴文メルマガ vol.840",
+    "url": "https://www.mag2.com/m/0001092981",
+    "readTime": 3
+  },
+  {
+    "id": "1088",
+    "title": "第840号｜時事ネタ：DeepSeek旋風と米国AI覇権の綻び——日本が取るべきポジションとは",
+    "description": "中国発DeepSeekが低コストで米国LLMに迫る性能を示したことで、AI開発の「民主化」が加速。堀江貴文がAI地政学とビジネス機会を斬る。",
+    "content": "【要約】: 2026年初頭、中国のDeepSeekが圧倒的な低コストで高性能LLMをリリースし、NVIDIAの株価急落とともに「AI開発は一部の超大企業だけのものではない」という現実が露わになった。堀江氏は「これはPC革命と同じ構造だ。メインフレームがパソコンに置き換えられたように、超大型モデルがローカルで動く小型高性能モデルに置き換えられていく」と分析する。\n\n【日本への影響】: 日本の大企業がOpenAI・Microsoft・Googleとの契約に多額を支払い続けている間に、DeepSeekやMistralなどのオープンソースモデルをローカルで動かすコスト革命が進む。堀江氏は「日本企業の意思決定の遅さが、このシフトに乗り遅れる最大のリスク。一方、スタートアップや個人は今すぐ乗り換えられる」と指摘し、ローカルLLM活用の具体手順も紹介した。\n\n【注目点】: 堀江氏が特に強調するのは「AIインフラへの過度な依存から脱却して、アプリケーション層で勝負せよ」というメッセージ。日本発のAIアプリケーションが世界市場で戦える余地が急拡大しており、不動産・医療・教育など規制産業での特化型AIにビジネスチャンスがあると論じた。",
+    "category": "HORIE",
+    "author": "堀江貴文",
+    "publishedAt": "2026-02-26T06:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop",
+    "source": "堀江貴文メルマガ vol.840",
+    "url": "https://www.mag2.com/m/0001092981",
+    "readTime": 3
+  },
 ];
 
-export const categories = ['トップ', 'JREIT', 'CBRE', 'AI・テック', 'PropTech', '商業不動産', '市場動向'] as const;
+export const categories = ['トップ', 'JREIT', 'HORIE', 'CBRE', 'AI・テック', 'PropTech', '商業不動産', '市場動向'] as const;

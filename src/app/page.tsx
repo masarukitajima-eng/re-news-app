@@ -8,6 +8,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import HeroCard from '@/components/HeroCard';
 import NewsGrid from '@/components/NewsGrid';
 import JREITSection from '@/components/JREITSection';
+import HorieSection from '@/components/HorieSection';
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('トップ');
@@ -43,6 +44,16 @@ export default function Home() {
     });
   };
 
+  // ホリエモン視点: 最新5件を表示
+  const horieArticles = useMemo(
+    () =>
+      [...mockArticles]
+        .filter((a) => a.category === 'HORIE')
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+        .slice(0, 5),
+    [],
+  );
+
   // J-REIT速報: 【取得/売却】形式の物件取引記事のみ、最新10件を表示
   const jreitArticles = useMemo(
     () =>
@@ -70,6 +81,11 @@ export default function Home() {
       />
       <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
       <main className="max-w-4xl mx-auto px-4 py-5">
+        {/* ホリエモン視点セクション（トップ表示時のみ） */}
+        {selectedCategory === 'トップ' && (
+          <HorieSection articles={horieArticles} />
+        )}
+
         {/* J-REIT速報セクション（トップ表示時のみ） */}
         {selectedCategory === 'トップ' && (
           <JREITSection articles={jreitArticles} />

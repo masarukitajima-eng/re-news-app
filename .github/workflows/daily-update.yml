@@ -39,6 +39,19 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/fetch-and-update.js
 
+      # ── 4b. 堀江貴文メルマガ取得（Gmail IMAP）──────────
+      - name: Fetch Horiemon newsletter (Gmail IMAP)
+        env:
+          GMAIL_USER:         ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$GMAIL_USER" ] && [ -n "$GMAIL_APP_PASSWORD" ]; then
+            node scripts/fetch-horie-mail.js
+          else
+            echo "⚠️  GMAIL_USER / GMAIL_APP_PASSWORD が未設定のため堀江メルマガ取得をスキップ"
+          fi
+
       # ── 5. 変更があるか確認 ──────────────────────────
       - name: Check for changes
         id: diff
