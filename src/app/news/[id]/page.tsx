@@ -37,27 +37,17 @@ function parseAnalysis(content: string): { label: string; body: string }[] {
   }).filter(s => s.body);
 }
 
-// テキスト内の \n を段落/<br> に変換するレンダラー
+// テキストをそのまま pre-wrap でレンダリング（全文・改行・装飾を忠実に再現）
 function renderBody(text: string): React.ReactNode {
-  // リテラルの \n（エスケープされた文字列）も実際の改行として扱う
+  // エスケープされた \n も実際の改行として正規化
   const normalized = text.replace(/\\n/g, '\n');
-  const paragraphs = normalized.split(/\n\n+/);
   return (
-    <>
-      {paragraphs.map((para, pi) => {
-        const lines = para.split('\n');
-        return (
-          <p key={pi} className="text-gray-800 text-[17px] leading-[1.85] tracking-wide mb-5 last:mb-0">
-            {lines.map((line, li) => (
-              <React.Fragment key={li}>
-                {line}
-                {li < lines.length - 1 && <br />}
-              </React.Fragment>
-            ))}
-          </p>
-        );
-      })}
-    </>
+    <div
+      className="text-gray-800 text-[16px] leading-[1.9] tracking-wide"
+      style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}
+    >
+      {normalized}
+    </div>
   );
 }
 

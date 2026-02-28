@@ -1,13 +1,6 @@
 /**
  * 堀江貴文メルマガ（mag2: 0001092981）をGmailから取得してmockNews.tsに追記するスクリプト
- *
- * 【初回セットアップ】
- * 1. Googleアカウントで2段階認証を有効化
- * 2. https://myaccount.google.com/apppasswords でアプリパスワードを生成
- * 3. .env.local に以下を追加:
- *      GMAIL_USER=あなたのGmailアドレス
- *      GMAIL_APP_PASSWORD=生成したアプリパスワード（スペースなし16文字）
- * 4. GitHub Secrets にも同様に GMAIL_USER / GMAIL_APP_PASSWORD を登録
+ * ※ AI要約なし・本文全文をそのまま保存
  *
  * 使い方: node scripts/fetch-horie-mail.js
  */
@@ -29,7 +22,7 @@ loadEnvLocal();
 
 const FETCH_COUNT = 5; // 最新N件を取得
 
-// INBOX に対してこの順で検索し、ヒットした全件を重複排除してマージ
+// INBOX に対してこの順で検索し、重複排除してマージ
 const SEARCH_QUERIES = [
   { from: 'mailmag@mag2premium.com' }, // ① 優先: 正確な送信元
   { from: '@mag2.com' },               // ② 次点: mag2.com ドメイン全般
@@ -38,81 +31,52 @@ const SEARCH_QUERIES = [
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// メール本文（HTML含む）からプレーンテキストを抽出
-function extractText(body) {
-  return body
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/[ \t]{2,}/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
 // メール件名から号数を抽出
 function extractIssueNumber(subject) {
-  const m = subject.match(/(?:vol\.?|第)\s*(\d+)/i);
-  return m ? m[1] : null;
+  // 《840-3》 形式
+  const partMatch = subject.match(/《(\d+)-(\d+)》/);
+  if (partMatch) return `${partMatch[1]}-${partMatch[2]}`;
+  // vol. 形式
+  const volMatch = subject.match(/(?:vol\.?|第)\s*(\d+)/i);
+  if (volMatch) return volMatch[1];
+  return null;
 }
 
-async function generateHorieContent(client, subject, bodyText) {
-  const snippet = bodyText.slice(0, 3000);
+// mailparser で本文（text/plain優先、なければHTMLをテキスト化）を取得
+async function parseEmailBody(rawSource) {
+  const { simpleParser } = require('mailparser');
+  const parsed = await simpleParser(rawSource);
 
-  const prompt = `以下のメルマガ情報をJSON形式だけで返してください。説明文・謝罪文・コードブロック不要。
-
-件名: ${subject}
-本文（抜粋）:
-${snippet}
-
-必ずこのJSON形式のみ返すこと:
-{"title":"第XXX号｜テーマ（20〜40文字）","description":"記事の核心（120文字以内）","content":"【要約】: 2〜3文。\\n\\n【日本への影響】: 2〜3文。\\n\\n【注目点】: 2〜3文。"}`;
-
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = response.content[0].text.trim()
-      .replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
-
-    // JSON ブロックだけ抽出して parse
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        return JSON.parse(jsonMatch[0]);
-      } catch { /* retry */ }
-    }
-    if (attempt < 2) await sleep(500);
+  if (parsed.text && parsed.text.trim().length > 100) {
+    return parsed.text.trim();
   }
-
-  // 2回失敗したら件名から最低限の記事を生成
-  const issueNum = extractIssueNumber(subject) || '';
-  return {
-    title:       issueNum ? `第${issueNum}号｜${subject.replace(/《\d+-\d+》|《\d+》/g, '').trim().slice(0, 35)}` : subject.slice(0, 40),
-    description: subject.slice(0, 120),
-    content:     `【要約】: ${subject}。\n\n【日本への影響】: 堀江貴文氏の視点から日本のビジネス・社会に示唆を与える内容です。\n\n【注目点】: メルマガ全文で詳細を確認できます。`,
-  };
+  // HTML フォールバック
+  if (parsed.html) {
+    return parsed.html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<\/div>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\n{4,}/g, '\n\n\n')
+      .trim();
+  }
+  return parsed.subject || '';
 }
 
 async function main() {
   const gmailUser = process.env.GMAIL_USER;
   const gmailPass = process.env.GMAIL_APP_PASSWORD;
-  const apiKey    = process.env.ANTHROPIC_API_KEY;
 
   if (!gmailUser || !gmailPass) {
     console.error('❌ GMAIL_USER または GMAIL_APP_PASSWORD が設定されていません');
-    console.error('   .env.local に GMAIL_USER と GMAIL_APP_PASSWORD を追加してください');
-    process.exit(1);
-  }
-  if (!apiKey) {
-    console.error('❌ ANTHROPIC_API_KEY が設定されていません');
     process.exit(1);
   }
 
@@ -120,13 +84,9 @@ async function main() {
   try {
     ImapFlow = require('imapflow').ImapFlow;
   } catch {
-    console.error('❌ imapflow が見つかりません。インストールしてください:');
-    console.error('   npm install imapflow --save');
+    console.error('❌ imapflow が見つかりません: npm install imapflow --save');
     process.exit(1);
   }
-
-  const { Anthropic } = require('@anthropic-ai/sdk');
-  const client = new Anthropic({ apiKey });
 
   console.log(`📬 Gmail (${gmailUser}) に接続中...`);
 
@@ -142,7 +102,7 @@ async function main() {
   await imap.mailboxOpen('INBOX', { readOnly: true });
   console.log('  📂 INBOX を検索中...');
 
-  // シンプルに3クエリで検索 → 重複排除してマージ
+  // 3クエリで検索 → 重複排除してマージ
   const messages = [];
   const seenMsgIds = new Set();
 
@@ -187,7 +147,7 @@ async function main() {
   const existingIds = [...ts.matchAll(/"id": "(\d+)"/g)].map(m => parseInt(m[1]));
   let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 2000;
 
-  // 既存URLのチェック（重複防止）
+  // 既存URLチェック（重複防止）
   const existingUrls = new Set([...ts.matchAll(/"url": "([^"]+)"/g)].map(m => m[1]));
 
   const HORIE_IMAGES = [
@@ -201,44 +161,55 @@ async function main() {
 
   for (let i = 0; i < targets.length; i++) {
     const msg = targets[i];
-    const subject = msg.envelope.subject || '（件名なし）';
-    const msgId   = msg.envelope.messageId || `horie-${msg.envelope.date}`;
+    const subject  = msg.envelope.subject || '（件名なし）';
+    const msgId    = msg.envelope.messageId || `horie-${msg.envelope.date}`;
     const articleUrl = `https://www.mag2.com/m/0001092981#${encodeURIComponent(msgId)}`;
 
     if (existingUrls.has(articleUrl)) {
-      console.log(`  スキップ (既存): ${subject.slice(0, 50)}`);
+      console.log(`  スキップ (既存): ${subject.slice(0, 60)}`);
       continue;
     }
 
-    process.stdout.write(`[${i + 1}/${targets.length}] "${subject.slice(0, 50)}" → `);
+    process.stdout.write(`[${i + 1}/${targets.length}] "${subject.slice(0, 60)}" → `);
 
-    // メール本文をテキスト変換
-    const bodyText = extractText(msg.source?.toString('utf8') || subject);
+    // ★ 全文取得（AI要約なし）
+    const fullText = msg.source
+      ? await parseEmailBody(msg.source)
+      : subject;
 
-    try {
-      const rich = await generateHorieContent(client, subject, bodyText);
-      const issueNum = extractIssueNumber(subject) || extractIssueNumber(rich.title || '');
-      const issueLabel = issueNum ? `堀江貴文メルマガ vol.${issueNum}` : '堀江貴文メルマガ';
+    const issueNum   = extractIssueNumber(subject);
+    const issueLabel = issueNum ? `堀江貴文メルマガ vol.${issueNum}` : '堀江貴文メルマガ';
 
-      newArticles.push({
-        id:          String(nextId++),
-        title:       rich.title || subject,
-        description: (rich.description || subject).slice(0, 120),
-        content:     rich.content,
-        category:    'HORIE',
-        author:      '堀江貴文',
-        publishedAt: new Date(msg.envelope.date).toISOString(),
-        imageUrl:    HORIE_IMAGES[i % HORIE_IMAGES.length],
-        source:      issueLabel,
-        url:         articleUrl,
-        readTime:    Math.max(1, Math.round(rich.content.length / 400)),
-      });
-      console.log('✅ ' + (rich.title || subject).slice(0, 50));
-    } catch (e) {
-      console.log(`⚠️  スキップ (${e.message})`);
-    }
+    // タイトルは件名から装飾を除いて整形
+    const cleanTitle = subject
+      .replace(/《\d+-\d+》|《\d+》/g, '')
+      .replace(/堀江貴文のブログでは言えない話/g, '')
+      .replace(/【(.+?)】/g, '$1')
+      .trim()
+      .slice(0, 60) || subject.slice(0, 60);
 
-    await sleep(300);
+    // description は本文の先頭120文字
+    const description = fullText
+      .replace(/\n+/g, ' ')
+      .trim()
+      .slice(0, 120);
+
+    newArticles.push({
+      id:          String(nextId++),
+      title:       issueNum ? `第${issueNum}号｜${cleanTitle}` : cleanTitle,
+      description,
+      content:     fullText,
+      category:    'HORIE',
+      author:      '堀江貴文',
+      publishedAt: new Date(msg.envelope.date).toISOString(),
+      imageUrl:    HORIE_IMAGES[i % HORIE_IMAGES.length],
+      source:      issueLabel,
+      url:         articleUrl,
+      readTime:    Math.max(1, Math.round(fullText.length / 600)),
+    });
+    console.log(`✅ ${fullText.length.toLocaleString()} 文字`);
+
+    await sleep(100);
   }
 
   if (newArticles.length === 0) {
@@ -251,7 +222,7 @@ async function main() {
   const newEntries  = newArticles
     .map(a => '  ' + JSON.stringify(a, null, 2).replace(/\n/g, '\n  '))
     .join(',\n');
-  const before = ts.slice(0, insertPoint).trimEnd();
+  const before    = ts.slice(0, insertPoint).trimEnd();
   const separator = before.endsWith('}') ? ',\n' : '\n';
   ts = ts.slice(0, insertPoint) + separator + newEntries + ',\n' + ts.slice(insertPoint);
   fs.writeFileSync(mockPath, ts, 'utf8');
