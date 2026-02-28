@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import CategoryFilter from '@/components/CategoryFilter';
 import HeroCard from '@/components/HeroCard';
 import NewsGrid from '@/components/NewsGrid';
+import JREITSection from '@/components/JREITSection';
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('トップ');
@@ -42,6 +43,16 @@ export default function Home() {
     });
   };
 
+  // J-REIT速報: 常に最新10件を表示（カテゴリフィルターに関わらず）
+  const jreitArticles = useMemo(
+    () =>
+      [...mockArticles]
+        .filter((a) => a.category === 'JREIT')
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+        .slice(0, 10),
+    [],
+  );
+
   const heroArticle = filteredArticles[0];
   const gridArticles = filteredArticles.slice(1);
 
@@ -55,6 +66,11 @@ export default function Home() {
       />
       <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
       <main className="max-w-4xl mx-auto px-4 py-5">
+        {/* J-REIT速報セクション（トップ表示時のみ） */}
+        {selectedCategory === 'トップ' && (
+          <JREITSection articles={jreitArticles} />
+        )}
+
         {filteredArticles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="text-6xl mb-4">🔍</div>

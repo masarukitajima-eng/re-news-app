@@ -25,6 +25,12 @@ loadEnvLocal();
 // 検索クエリ設定
 // ──────────────────────────────────────────
 const QUERIES = [
+  // ── J-REIT（優先・先頭に配置）────────────────────────
+  { keyword: 'J-REIT 物件取得 適時開示',    category: 'JREIT' },
+  { keyword: 'REIT 不動産 取得 売却 投資法人', category: 'JREIT' },
+  { keyword: 'ジャパン リート 物件取得',     category: 'JREIT' },
+  { keyword: '投資法人 取得 ホテル オフィス 物流', category: 'JREIT' },
+  // ── 既存カテゴリ ──────────────────────────────────
   { keyword: '不動産 AI',         category: 'AI・テック'  },
   { keyword: '不動産テック',       category: 'PropTech'    },
   { keyword: 'PropTech',          category: 'PropTech'    },
@@ -35,6 +41,13 @@ const QUERIES = [
 ];
 
 const CATEGORY_IMAGES = {
+  'JREIT': [
+    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop',
+  ],
   'CBRE': [
     'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=800&auto=format&fit=crop',
@@ -178,21 +191,37 @@ async function generateRichContent(title, description, category, isEng = false) 
       ? '"title": "日本語タイトル（50文字以内・簡潔に）",'
       : '';
 
-    const prompt = `あなたは不動産・PropTech専門の日本語アナリストです。
+    // J-REIT 専用の追加指示（取得価格・利回り・物件名・取得先を必須記載）
+    const jreitNote = category === 'JREIT'
+      ? `\nこれはJ-REIT（不動産投資信託）の物件売買情報です。以下の要素を必ず本文に含めてください（不明な場合は「未開示」と記載）：\n  - 物件名または物件種別\n  - 取得価格または売却価格（億円）\n  - 期待利回り（%）\n  - 取得先・売却先（前所有者）`
+      : '';
+
+    const sectionGuide = category === 'JREIT'
+      ? `- 【要約】: 物件名・取得価格・利回りを含む取引概要を2〜3文で
+- 【投資家への注目点】: この取引が投資家・市場に与える意義を2〜3文
+- 【物件詳細】: 物件の特徴・立地・取得先など取引の詳細を2〜3文`
+      : `- 【要約】: 記事の核心を2〜3文で簡潔に
+- 【日本への影響】: 日本の不動産市場・業界に与える影響を独自の視点で具体的に2〜3文
+- 【注目点】: 技術的またはビジネスモデルの特筆すべきポイントを2〜3文`;
+
+    const contentTemplate = category === 'JREIT'
+      ? `"content": "【要約】: （ここにテキスト）。\\n\\n【投資家への注目点】: （ここにテキスト）。\\n\\n【物件詳細】: （ここにテキスト）。"`
+      : `"content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"`;
+
+    const prompt = `あなたは不動産・J-REIT専門の日本語アナリストです。
 ${sourceNote}
+${jreitNote}
 
 カテゴリ: ${category}
 
 以下の3セクション構成で記事本文を執筆してください:
-- 【要約】: 記事の核心を2〜3文で簡潔に
-- 【日本への影響】: 日本の不動産市場・業界に与える影響を独自の視点で具体的に2〜3文
-- 【注目点】: 技術的またはビジネスモデルの特筆すべきポイントを2〜3文
+${sectionGuide}
 
 JSONのみで返してください（コードブロック不要）:
 {
   ${titleField}
   "description": "記事の核心を1〜2文で（120文字以内）",
-  "content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"
+  ${contentTemplate}
 }`;
 
     const response = await client.messages.create({
