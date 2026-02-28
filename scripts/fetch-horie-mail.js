@@ -27,14 +27,14 @@ function loadEnvLocal() {
 }
 loadEnvLocal();
 
-const SENDER_PATTERN  = /堀江貴文|horiemon|mag2.*0001092981|mag2premium/i;
-const SUBJECT_PATTERN = /堀江貴文|ホリエモン|vol\.\d+|0001092981/i;
-const FETCH_COUNT     = 5; // 最新N件を取得
+const FETCH_COUNT = 5; // 最新N件を取得
 
-// 検索対象メールボックス（INBOX + すべてのメール）
-const MAILBOXES_TO_SEARCH = ['INBOX', '[Gmail]/All Mail'];
-// 検索する送信者パターン
-const SEARCH_FROM_PATTERNS = ['@mag2.com', '@mag2premium.com'];
+// INBOX に対してこの順で検索し、ヒットした全件を重複排除してマージ
+const SEARCH_QUERIES = [
+  { from: 'mailmag@mag2premium.com' }, // ① 優先: 正確な送信元
+  { from: '@mag2.com' },               // ② 次点: mag2.com ドメイン全般
+  { subject: '堀江貴文' },              // ③ 件名キーワード
+];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -61,37 +61,44 @@ function extractIssueNumber(subject) {
 }
 
 async function generateHorieContent(client, subject, bodyText) {
-  const snippet = bodyText.slice(0, 3000); // 最初の3000文字を使用
+  const snippet = bodyText.slice(0, 3000);
 
-  const prompt = `あなたは堀江貴文のメルマガを読み込んでいる日本語ライターです。
-
-以下のメルマガ本文を読み、読者が価値を感じられるよう3セクションで要約してください。
+  const prompt = `以下のメルマガ情報をJSON形式だけで返してください。説明文・謝罪文・コードブロック不要。
 
 件名: ${subject}
 本文（抜粋）:
 ${snippet}
 
-以下の3セクション構成で執筆してください:
-- 【要約】: メルマガの核心メッセージを堀江氏の視点・言葉に寄り添って2〜3文で
-- 【日本への影響】: この内容が日本のビジネス・社会・不動産市場にどう影響するか独自の視点で2〜3文
-- 【注目点】: 堀江氏ならではの切り口・斬新なビジネスモデルの視点・行動指針を2〜3文
+必ずこのJSON形式のみ返すこと:
+{"title":"第XXX号｜テーマ（20〜40文字）","description":"記事の核心（120文字以内）","content":"【要約】: 2〜3文。\\n\\n【日本への影響】: 2〜3文。\\n\\n【注目点】: 2〜3文。"}`;
 
-JSONのみで返してください（コードブロック不要）:
-{
-  "title": "第XXX号｜（メインテーマを20〜40文字で表現したタイトル）",
-  "description": "記事の核心を1〜2文で（120文字以内）",
-  "content": "【要約】: （テキスト）。\\n\\n【日本への影響】: （テキスト）。\\n\\n【注目点】: （テキスト）。"
-}`;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
+    });
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1200,
-    messages: [{ role: 'user', content: prompt }],
-  });
+    const raw = response.content[0].text.trim()
+      .replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
 
-  const text = response.content[0].text.trim()
-    .replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-  return JSON.parse(text);
+    // JSON ブロックだけ抽出して parse
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch { /* retry */ }
+    }
+    if (attempt < 2) await sleep(500);
+  }
+
+  // 2回失敗したら件名から最低限の記事を生成
+  const issueNum = extractIssueNumber(subject) || '';
+  return {
+    title:       issueNum ? `第${issueNum}号｜${subject.replace(/《\d+-\d+》|《\d+》/g, '').trim().slice(0, 35)}` : subject.slice(0, 40),
+    description: subject.slice(0, 120),
+    content:     `【要約】: ${subject}。\n\n【日本への影響】: 堀江貴文氏の視点から日本のビジネス・社会に示唆を与える内容です。\n\n【注目点】: メルマガ全文で詳細を確認できます。`,
+  };
 }
 
 async function main() {
@@ -132,57 +139,31 @@ async function main() {
   });
 
   await imap.connect();
+  await imap.mailboxOpen('INBOX', { readOnly: true });
+  console.log('  📂 INBOX を検索中...');
 
-  // 複数メールボックス × 複数送信者パターンで広範囲に検索
+  // シンプルに3クエリで検索 → 重複排除してマージ
   const messages = [];
   const seenMsgIds = new Set();
 
-  for (const mailbox of MAILBOXES_TO_SEARCH) {
+  for (const query of SEARCH_QUERIES) {
+    const label = JSON.stringify(query);
     try {
-      await imap.mailboxOpen(mailbox, { readOnly: true });
-      console.log(`  📂 ${mailbox} を検索中...`);
+      let count = 0;
+      for await (const message of imap.fetch(
+        query,
+        { uid: true, envelope: true, source: true },
+      )) {
+        const msgId = message.envelope.messageId || `inbox-${message.uid}`;
+        if (!seenMsgIds.has(msgId)) {
+          seenMsgIds.add(msgId);
+          messages.push(message);
+          count++;
+        }
+      }
+      console.log(`  ✓ ${label}: ${count} 件`);
     } catch (e) {
-      console.log(`  ⚠️  ${mailbox}: スキップ (${e.message})`);
-      continue;
-    }
-
-    // 送信者ドメインで検索
-    for (const fromPat of SEARCH_FROM_PATTERNS) {
-      try {
-        for await (const message of imap.fetch(
-          { from: fromPat },
-          { uid: true, envelope: true, source: true },
-        )) {
-          const from    = (message.envelope.from || []).map(f => `${f.name || ''} ${f.address || ''}`).join(' ');
-          const subject = message.envelope.subject || '';
-          const msgId   = message.envelope.messageId || `${mailbox}-${message.uid}`;
-          if (seenMsgIds.has(msgId)) continue;
-          if (SENDER_PATTERN.test(from) || SENDER_PATTERN.test(subject) || SUBJECT_PATTERN.test(subject)) {
-            seenMsgIds.add(msgId);
-            messages.push(message);
-          }
-        }
-      } catch (e) {
-        console.log(`  ⚠️  ${fromPat} 検索エラー: ${e.message}`);
-      }
-    }
-
-    // キーワードで追加検索（件名に「堀江貴文」or「0001092981」）
-    for (const keyword of ['堀江貴文', '0001092981']) {
-      try {
-        for await (const message of imap.fetch(
-          { subject: keyword },
-          { uid: true, envelope: true, source: true },
-        )) {
-          const msgId = message.envelope.messageId || `${mailbox}-${message.uid}`;
-          if (!seenMsgIds.has(msgId)) {
-            seenMsgIds.add(msgId);
-            messages.push(message);
-          }
-        }
-      } catch (e) {
-        console.log(`  ⚠️  件名検索 "${keyword}" エラー: ${e.message}`);
-      }
+      console.log(`  ⚠️  ${label}: スキップ (${e.message})`);
     }
   }
 
@@ -191,7 +172,7 @@ async function main() {
     .sort((a, b) => new Date(b.envelope.date) - new Date(a.envelope.date))
     .slice(0, FETCH_COUNT);
 
-  console.log(`📩 ホリエモンメルマガ: ${messages.length} 件 → 最新 ${targets.length} 件を処理`);
+  console.log(`📩 合計 ${messages.length} 件 → 最新 ${targets.length} 件を処理`);
 
   await imap.logout();
 

@@ -14198,6 +14198,20 @@ export const mockArticles: Article[] = [
     "url": "https://www.mag2.com/m/0001092981#%3C2133679534.51262002.1771193401462.tdm%40cinnamon.mag2tegami.com%3E",
     "readTime": 1
   },
+
+  {
+    "id": "1093",
+    "title": "第839-3号｜TikTokで月商1200万円を稼ぐカラクリ解析",
+    "description": "堀江貴文が地方でTikTokを活用して月商約1200万円を達成するビジネスモデルの仕組みを解説。ブログでは公開できない戦略的な手法を紹介。",
+    "content": "【要約】: TikTokを活用した地方発のビジネスで月商1200万円を実現する具体的なカラクリについて解説。堀江貴文が提唱する新しいマネタイズ戦略を紹介している。\n\n【日本への影響】: 地方経済の活性化やSNS時代の新しい起業モデルとして注目される。個人が大資本を必要とせずに高収益を得る方法として若年層の起業意欲を刺激する可能性がある。\n\n【注目点】: TikTokのアルゴリズム活用と地域特性の組み合わせが重要。従来のビジネス常識にとらわれない新しい収益化メカニズムが示唆されている。",
+    "category": "HORIE",
+    "author": "堀江貴文",
+    "publishedAt": "2026-02-15T22:20:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop",
+    "source": "堀江貴文メルマガ vol.839",
+    "url": "https://www.mag2.com/m/0001092981#%3C1805815761.51287948.1771194000848.tdm%40oregano.mag2tegami.com%3E",
+    "readTime": 1
+  },
 ];
 
 export const categories = ['トップ', 'JREIT', 'HORIE', 'CBRE', 'AI・テック', 'PropTech', '商業不動産', '市場動向'] as const;
