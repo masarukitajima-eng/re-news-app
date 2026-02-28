@@ -1,3 +1,4 @@
+import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { mockArticles } from '@/data/mockNews';
@@ -17,29 +18,45 @@ function formatDate(dateString: string): string {
 
 // 【セクション名】: 本文 の形式でパースする
 function parseAnalysis(content: string): { label: string; body: string }[] {
+  // 【label】: body の区切りを全部見つける
   const sectionPattern = /【([^】]+)】[：:]\s*/g;
-  const sections: { label: string; body: string }[] = [];
+  const matches: { index: number; label: string; end: number }[] = [];
   let match;
-  const matches: { index: number; label: string }[] = [];
-
   while ((match = sectionPattern.exec(content)) !== null) {
-    matches.push({ index: match.index, label: match[1] });
+    matches.push({ index: match.index, label: match[1], end: match.index + match[0].length });
   }
 
-  matches.forEach((m, i) => {
-    const start = content.indexOf('】', m.index) + 2; // skip 】 and separator
-    const colonOffset = content[start] === '：' || content[start] === ':' ? 2 : 0;
-    const bodyStart = start + colonOffset;
-    const bodyEnd = i + 1 < matches.length ? matches[i + 1].index : content.length;
-    const body = content.slice(bodyStart, bodyEnd).trim();
-    if (body) sections.push({ label: m.label, body });
-  });
-
-  // セクションが見つからなければそのまま返す
-  if (sections.length === 0) {
+  if (matches.length === 0) {
     return [{ label: '', body: content.trim() }];
   }
-  return sections;
+
+  return matches.map((m, i) => {
+    const bodyEnd = i + 1 < matches.length ? matches[i + 1].index : content.length;
+    const body = content.slice(m.end, bodyEnd).trim();
+    return { label: m.label, body };
+  }).filter(s => s.body);
+}
+
+// テキスト内の \n を段落/<br> に変換するレンダラー
+function renderBody(text: string): React.ReactNode {
+  const paragraphs = text.split(/\n\n+/);
+  return (
+    <>
+      {paragraphs.map((para, pi) => {
+        const lines = para.split('\n');
+        return (
+          <p key={pi} className="text-gray-800 text-base leading-relaxed mb-3 last:mb-0">
+            {lines.map((line, li) => (
+              <React.Fragment key={li}>
+                {line}
+                {li < lines.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </p>
+        );
+      })}
+    </>
+  );
 }
 
 export default async function ArticlePage({ params }: Props) {
@@ -105,17 +122,14 @@ export default async function ArticlePage({ params }: Props) {
         {/* Structured analysis sections */}
         <div className="space-y-6">
           {sections.map((section, i) => (
-            <div key={i}>
-              {section.label ? (
-                <>
-                  <h2 className="text-xs font-bold text-[#FA2D48] uppercase tracking-wider mb-2">
-                    {section.label}
-                  </h2>
-                  <p className="text-gray-800 text-base leading-relaxed">{section.body}</p>
-                </>
-              ) : (
-                <p className="text-gray-800 text-base leading-relaxed">{section.body}</p>
+            <div key={i} className={section.label ? 'bg-gray-50 rounded-xl p-4' : ''}>
+              {section.label && (
+                <h2 className="flex items-center gap-1.5 text-sm font-bold text-[#FA2D48] mb-2.5">
+                  <span className="w-1 h-4 bg-[#FA2D48] rounded-full flex-shrink-0" />
+                  {section.label}
+                </h2>
               )}
+              {renderBody(section.body)}
             </div>
           ))}
         </div>
