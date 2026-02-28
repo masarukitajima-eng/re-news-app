@@ -15317,6 +15317,59 @@ export const mockArticles: Article[] = [
     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBTNC1SV2ZEeEQtT2t6RFlPSDB5Y2xKUWtZRFBhUlI3dkNOZEhPcngySHZNV2ZIM3NSTEVGSjJqLTZER2RneXJhMzBsNEhZcjQ4SnlaTFU4Z0l5M3Zab2NBQkpFeUNQLTg?oc=5",
     "readTime": 1
   },
+
+  {
+    "id": "1182",
+    "title": "不動産売買プラットフォーム「キマール」において、「マーケットプラン」の提供を開始！｜いえらぶCLOUD - PR TIMES",
+    "description": "不動産売買プラットフォーム「キマール」が新機能「マーケットプラン」を開始。市場データを活用した不動産売却支援ツールで、PropTech業界の革新が加速。",
+    "content": "【要約】: 不動産売買プラットフォーム「キマール」が新機能「マーケットプラン」の提供を開始し、売主に市場データに基づいた適切な価格設定と販売戦略をAIと分析ツールを通じて提供する。本機能により、透明性の高い不動産取引環境の実現とユーザー体験の向上を目指している。\n\n【日本への影響】: 日本の不動産市場において、個人売主が市場相場を可視化でき、不動産仲介業者への過度な依存が軽減される可能性がある。特に地方圏での流動性向上や、情報非対称性の是正を通じた市場の民主化が期待される。\n\n【注目点】: AIと市場データを組み合わせた価格算定機能により、個人投資家や小規模事業者にも機関投資家と同等のデータドリブン意思決定を可能にしている点が革新的である。この動きはプロパーティテック業界における「スマートシティー構想」への寄与も視野に入れた戦略展開と言える。",
+    "category": "PropTech",
+    "author": "PR TIMES",
+    "publishedAt": "2026-01-20T08:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1TV3BkVzFsbm1RU21EOTZlT0E5ZnZseV95OFdDOTVXc0QwWDJON2lwX3dUUVF3NzZLd1B6UElzdnV0SHRDaXlYbjByVzNVSHdXRG8xTlVYYnZ6cndiMktxUmJ0REhMTm5kanc?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1183",
+    "title": "イタンジ、「不動産DX EXPO」（7/30-8/1）に出展 麗澤大学教授（AI・ビジネス研究センター長）の宗氏×イタンジCEO 永嶋の対談を実施 - PR TIMES",
+    "description": "イタンジが「不動産DX EXPO」に出展し、AI・ビジネス研究の専門家との対談を実施。不動産業界のデジタル化とAI活用の最前線を紹介する。",
+    "content": "【要約】：イタンジは2024年7月30日～8月1日に開催される「不動産DX EXPO」に出展し、麗澤大学の宗教授（AI・ビジネス研究センター長）とCEO永嶋による対談を実施する。不動産業界へのAI導入とデジタルトランスフォーメーションの実践的展開について議論される予定である。\n\n【日本への影響】：日本の不動産業界は労働力不足と業務効率化が急務となっており、本対談を通じたAI・DXの具体的事例提示は、中小仲介業者を含む広範な事業者の意思決定を促進する可能性が高い。大学研究機関との連携による知見の発信により、不動産テック企業の信頼性向上と業界全体のデジタル化の加速が期待される。\n\n【注目点】：学術的権威とビジネス実践者の対談という構成により、理論と実装のギャップを埋める知見が得られる点が重要である。不動産DXの具体的ROIや導入課題についての言及が、同業他社やスタートアップの事業判断に影響を与える触媒となり得る。",
+    "category": "PropTech",
+    "author": "PR TIMES",
+    "publishedAt": "2025-07-14T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE42QWVpTE5oWU11UnhpMFBRNHFvbW4xaEpzZ2g2Nml5MWZmcGNPOWpJQ2pDVmlwaTM2Tkw3YVJvLUp1RkJ5WFdqbm1UOVl4S0FZMVlpWXdUMjRGWmZaaWxjdzNfcnNtMjdpRHc?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1184",
+    "title": "TRUSTART、12月11日〜13日不動産テックEXPOに出展決定 - PR TIMES",
+    "description": "TRUSTARTが12月11日～13日開催の不動産テックEXPOに出展。PropTech企業として、不動産業界のデジタル化・自動化ソリューションを展示する。",
+    "content": "【要約】: TRUSTARTが2024年12月11日～13日開催の不動産テックEXPOに出展することを決定した。同社はPropTech企業として、不動産取引の効率化・透明化を実現するテクノロジーソリューションを業界関係者に提案する。本展示会での出展は、国内不動産業界へのデジタル化ソリューション浸透を加速させる機会となる。\n\n【日本への影響】: 不動産テックEXPOへの参加は、依然としてアナログプロセスが残存する日本の不動産業界に対し、デジタルトランスフォーメーションの必要性をより強く認識させる契機となり得る。特に仲介手数料の透明化や契約プロセスの自動化へのニーズが高まる中で、TRUSTARTのようなPropTech企業の存在が業界全体の構造改革を促進する可能性がある。大手不動産企業や中小業者の来場者との接点拡大は、FinTech×不動産の融合促進につながり、今後の不動産流通市場の競争構造を大きく変える可能性を秘めている。\n\n【注目点】: PropTech展示会への出展により、TRUSTARTがどのような最新テクノロジー（ブロックチェーン、AI、スマートコントラクトなど）を活用した不動産ソリューションを披露するのかが重要な関心事である。また、本展示会を通じた既存不動産企業やスタートアップとのパートナーシップ構築が、同社の事業拡大戦略にどう組み込まれるかも注視の価値がある。",
+    "category": "PropTech",
+    "author": "PR TIMES",
+    "publishedAt": "2024-12-02T08:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE52eDgxTlNWckZaMmEwUkN5TWdEU2ZqM3ZzbDJuY1Bua1l2a2d1U2c5MXFXNkhJTlJfcWoxblQtUGRlcXpxTHVEMWtnX0kzZm5IZktwYVgtN2JFVWxlTDJaUmpTd1ViQ2Y0eXc?oc=5",
+    "readTime": 1
+  },
+  {
+    "id": "1185",
+    "title": "“あたらしいやり方”で不動産業界を革新する GOGEN 代表取締役CEO 和田が、不動産テック協会の理事に就任 - PR TIMES",
+    "description": "GOGENの和田CEOが不動産テック協会の理事に就任。デジタル技術による不動産業界の革新と業界標準化への推進役として期待される。",
+    "content": "【要約】: GOGENの和田代表取締役CEOが不動産テック協会の理事に就任したことが発表された。これにより、PropTech企業による業界改革の推進と業界標準化への動きが加速することが期待される。同協会への参画を通じて、「あたらしいやり方」による不動産業界のデジタル変革を主導する立場が強化される。\n\n【日本への影響】: 日本の不動産市場は依然として対面取引や紙ベースのプロセスが主流であり、GOGENのような革新的なアプローチの業界導入は、流通効率化と市場の透明性向上に直結する。理事就任による協会内での発言力強化は、PropTech企業の要望をより政策・ガイドラインに反映させやすくなり、業界全体のデジタル化ペースを加速させる可能性がある。\n\n【注目点】: 不動産テック協会への理事参画は、単なる個社の地位向上ではなく、業界横断的な標準化・規制環境の整備における発言権獲得を意味する。GOGENの「あたらしいやり方」がどのような技術・ビジネスモデルに基づくのか、および協会内での具体的な改革提案内容が今後の業界動向を左右する重要な要素となる。",
+    "category": "PropTech",
+    "author": "PR TIMES",
+    "publishedAt": "2024-06-26T07:00:00.000Z",
+    "imageUrl": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBIU3k4R3ItRmxMYzQ5M1FzcWZKMkJtMjEtSTZ2YmoyYVZUb3p5cWtQbDQtVjBLU0U5MzFpRzgwYlBNNWdTczRQcDlVOTVXQktmNkk2ckxsSDg4SktWMGtzbXNLQmJXd2xleGc?oc=5",
+    "readTime": 1
+  },
 ];
 
 export const categories = ['トップ', 'JREIT', 'HORIE', 'CBRE', 'AI・テック', 'PropTech', '商業不動産', '市場動向'] as const;
