@@ -29,6 +29,9 @@ const SEARCH_QUERIES = [
   { subject: '堀江貴文' },              // ③ 件名キーワード
 ];
 
+// 90日超の記事を削除（prune-old-articles.js と共通ロジック）
+const { pruneOldArticles } = require('./prune-old-articles');
+
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // メール件名から号数を抽出
@@ -144,6 +147,14 @@ async function main() {
   // mockNews.ts を読み込み
   const mockPath = path.join(__dirname, '..', 'src', 'data', 'mockNews.ts');
   let ts = fs.readFileSync(mockPath, 'utf8');
+
+  // ── 90日超の古い記事を先に削除 ──────────────────────
+  const { ts: pruned, removed: prunedCount } = pruneOldArticles(ts);
+  if (prunedCount > 0) {
+    console.log(`🗑  古い記事を削除: ${prunedCount} 件 (90日以上経過)`);
+    ts = pruned;
+  }
+
   const existingIds = [...ts.matchAll(/"id": "(\d+)"/g)].map(m => parseInt(m[1]));
   let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 2000;
 
