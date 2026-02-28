@@ -43,11 +43,15 @@ export default function Home() {
     });
   };
 
-  // J-REIT速報: 常に最新10件を表示（カテゴリフィルターに関わらず）
+  // J-REIT速報: 【取得/売却】形式の物件取引記事のみ、最新10件を表示
   const jreitArticles = useMemo(
     () =>
       [...mockArticles]
-        .filter((a) => a.category === 'JREIT')
+        .filter(
+          (a) =>
+            a.category === 'JREIT' &&
+            /^【(取得|売却|譲渡)/.test(a.title),
+        )
         .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
         .slice(0, 10),
     [],
