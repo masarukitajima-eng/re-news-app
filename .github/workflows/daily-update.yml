@@ -39,6 +39,17 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/fetch-and-update.js
 
+      # ── 4a-2. 解説なし記事のリライト（Claude API） ──────
+      - name: Rewrite articles without commentary
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            node scripts/rewrite-latest.js
+          else
+            echo "ANTHROPIC_API_KEY 未設定のためリライトスキップ"
+          fi
+
       # ── 4b. 堀江貴文メルマガ取得（Gmail IMAP）──────────
       - name: Fetch Horiemon newsletter (Gmail IMAP)
         env:

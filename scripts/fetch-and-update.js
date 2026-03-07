@@ -216,6 +216,24 @@ function isJREITPrioritySource(url) {
   return JREIT_PRIORITY_SOURCES.some(domain => url.includes(domain));
 }
 
+/**
+ * 不動産金融に無関係な記事をキーワードベースで除外する事前フィルタ
+ * Google News RSS は検索精度が低いため、取得後にフィルタリングが必要
+ */
+function isRelevantToRealEstateFinance(title, description, source) {
+  const text = (title + ' ' + description + ' ' + source).toLowerCase();
+
+  // 明確に無関係なトピックを除外
+  const EXCLUDE_PATTERNS = /ゲーム|アニメ|芸能|スポーツ|ゴルフ|サッカー|野球|バスケ|料理|レシピ|ダイエット|美容|ファッション|音楽|映画|ドラマ|漫画|小説|占い|星座|グルメ|旅行ガイド|観光スポット|年頭所感|イメージキャラクター|新tvcm|tvcm|新cm|衣料循環|リサイクル衣料|ペット|犬|猫|結婚|婚活|恋愛|育児|子育て/i;
+  if (EXCLUDE_PATTERNS.test(text)) return false;
+
+  // 不動産金融に関連するキーワードが少なくとも1つ含まれていること
+  const RELEVANT_PATTERNS = /不動産|reit|リート|投資法人|投資信託|物件|オフィス|商業施設|物流施設|住宅|マンション|ビル|賃貸|売買|売却|取得|開発|建設|建築|金融|ファンド|利回り|cbre|proptech|プロップテック|不動産テック|テナント|賃料|地価|再開発|都市開発|用途地域|容積率|鑑定|仲介|管理|アセット|ポートフォリオ|キャップレート|noi|デューデリ|証券化|spc|am会社|pm会社|信託受益権|ローン|担保|抵当|lender|borrower|エクイティ|デット|メザニン|バリュアション|コワーキング|データセンター|倉庫|ホテル|旅館|シニア住宅|ヘルスケア施設|インフラ|再エネ|太陽光|風力|蓄電/i;
+  if (!RELEVANT_PATTERNS.test(text)) return false;
+
+  return true;
+}
+
 let anthropicClient = null;
 
 function getAnthropicClient() {
@@ -273,17 +291,24 @@ async function generateRichContent(title, description, category, isEng = false) 
 
     const contentTemplate = `"content": "【要約】: （ここにテキスト）。\\n\\n【日本への影響】: （ここにテキスト）。\\n\\n【注目点】: （ここにテキスト）。"`;
 
-    const prompt = `あなたは不動産・J-REIT専門の日本語アナリストです。
+    const prompt = `あなたは不動産金融・J-REIT専門の日本語アナリストです。
 ${sourceNote}
 ${jreitNote}
 
 カテゴリ: ${category}
 
-以下の3セクション構成で記事本文を執筆してください:
+まず、この記事が「不動産金融」に関連するか判定してください。
+不動産金融とは：不動産投資、REIT、不動産ファンド、不動産証券化、不動産売買・取得・売却、不動産開発、商業不動産、不動産テクノロジー、不動産市場動向、不動産AI活用、物流施設・データセンター等の不動産アセットに関する内容です。
+
+関連性が低い場合（芸能、スポーツ、一般消費者向け広告、不動産と無関係な企業ニュース等）は以下を返してください:
+{"relevant": false}
+
+関連性がある場合、以下の3セクション構成で記事本文を執筆してください:
 ${sectionGuide}
 
 JSONのみで返してください（コードブロック不要）:
 {
+  "relevant": true,
   ${titleField}
   "description": "記事の核心を1〜2文で（120文字以内）",
   ${contentTemplate}
@@ -298,6 +323,11 @@ JSONのみで返してください（コードブロック不要）:
     const text = response.content[0].text.trim()
       .replace(/^```json\s*/i, '').replace(/\s*```$/, '');
     const parsed = JSON.parse(text);
+
+    // 関連性が低いと判定された場合
+    if (parsed.relevant === false) {
+      return { relevant: false };
+    }
 
     if (!parsed.description || !parsed.content) {
       throw new Error('必須フィールドがありません');
@@ -336,7 +366,7 @@ async function main() {
   const hasTranslation = !!process.env.ANTHROPIC_API_KEY;
   // Claude 呼び出し上限（J-REITは別カウンター・優先枠）
   const MAX_CLAUDE_JREIT = 30;  // J-REIT は多めに割り当て
-  const MAX_CLAUDE_OTHER = 10;  // その他カテゴリ
+  const MAX_CLAUDE_OTHER = 40;  // その他カテゴリ（解説カバー率向上のため引き上げ）
   let claudeJREIT = 0;
   let claudeOther = 0;
 
@@ -388,6 +418,11 @@ async function main() {
           continue; // 市況・指数・決算・公募などは除外
         }
 
+        // ── 不動産金融に無関係な記事を除外（JREIT以外） ──
+        if (effectiveCategory !== 'JREIT' && !isRelevantToRealEstateFinance(title, item.description || '', item.source)) {
+          continue;
+        }
+
         const isEng    = isEnglish(title);
         const isJREIT_ = effectiveCategory === 'JREIT';
 
@@ -403,7 +438,13 @@ async function main() {
           const rich = await generateRichContent(
             title, item.description || item.title, effectiveCategory, isEng,
           );
-          if (rich) {
+          if (rich && rich.relevant === false) {
+            process.stdout.write('(無関係 → 除外)\n');
+            isJREIT_ ? claudeJREIT++ : claudeOther++;
+            await sleep(300);
+            continue; // この記事を追加しない
+          }
+          if (rich && rich.description && rich.content) {
             if ((isEng || isJREIT_) && rich.title) title = rich.title;
             description = rich.description.slice(0, 120);
             content     = rich.content;
